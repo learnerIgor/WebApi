@@ -20,10 +20,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.MapGet("/Users", (IUserService userService) =>
-{
-    return userService.GetListUsers(0, null, 10);
-});
 
 app.UseAuthorization();
 

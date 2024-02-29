@@ -12,7 +12,7 @@ namespace Users.Service
             _userRepository = userRepository;
         }
 
-        public IReadOnlyCollection<User> GetListUsers(int? offset, string? labelFree, int? limit = 7)
+        public IReadOnlyCollection<User> GetListUsers(int? offset, string? labelFree, int? limit = 6)
         {
             return _userRepository.GetListUsers(offset, labelFree, limit);
         }

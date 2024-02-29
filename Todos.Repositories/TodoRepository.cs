@@ -23,10 +23,11 @@ namespace Todos.Repositories
             var todos = TodoList;
 
             ownerTodo = ownerTodo ?? 0;
+            todos = todos.Where(i => i.OwnerId == ownerTodo).ToList();
 
             if (!string.IsNullOrWhiteSpace(labelFreeText))
             {
-                todos = todos.Where(l => l.Label.Contains(labelFreeText, StringComparison.InvariantCultureIgnoreCase) && l.OwnerId == ownerTodo).ToList();
+                todos = todos.Where(l => l.Label.Contains(labelFreeText, StringComparison.InvariantCultureIgnoreCase)).ToList();
             }
 
             todos = todos.OrderBy(i => i.Id).ToList();

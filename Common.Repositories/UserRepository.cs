@@ -6,16 +6,16 @@ namespace Common.Repositories
     {
         private static List<User> UsersList = new()
         {
-                new User { Id = 1, Name="Name1" },
-                new User { Id = 2, Name="Name2"},
-                new User { Id = 3, Name="Name3" },
-                new User { Id = 4, Name="Name4" },
-                new User { Id = 5, Name="Name5" },
-                new User { Id = 6, Name="Name6" },
-                new User { Id = 7, Name="Name7" },
-                new User { Id = 8, Name="Name8" },
-                new User { Id = 9, Name="Name9" },
-                new User { Id = 10, Name="Name10" },
+                new User { Id = 1, Name = "Tom" },
+                new User { Id = 2, Name = "Bob" },
+                new User { Id = 3, Name = "Allice" },
+                new User { Id = 4, Name = "John" },
+                new User { Id = 5, Name = "Marty" },
+                new User { Id = 6, Name = "Lionel" },
+                new User { Id = 7, Name = "Garry" },
+                new User { Id = 8, Name = "Tim" },
+                new User { Id = 9, Name = "Max" },
+                new User { Id = 10, Name = "Berta" } 
         };
         public IReadOnlyCollection<User> GetListUsers(int? offset, string? nameFree, int? limit)
         {
