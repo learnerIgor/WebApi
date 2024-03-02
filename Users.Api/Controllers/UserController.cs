@@ -1,6 +1,7 @@
 using Common.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Users.Service;
+using Users.Service.Dto;
 
 namespace Users.Api.Controllers
 {
@@ -13,7 +14,8 @@ namespace Users.Api.Controllers
         {
             _userService = userService;
         }
-        [HttpGet("/users")]
+
+        [HttpGet]
         public IActionResult ListUsers(int? offset, string? nameFree, int? limit)
         {
             var users = _userService.GetListUsers(offset, nameFree, limit);
@@ -21,7 +23,8 @@ namespace Users.Api.Controllers
             HttpContext.Response.Headers.Append("x-Total-Count", count.ToString());
             return Ok(users);
         }
-        [HttpGet("/users/{id}")]
+
+        [HttpGet("{id}")]
         public IActionResult GetUserById(int id)
         {
             var user = _userService.GetIdUser(id);
@@ -29,22 +32,30 @@ namespace Users.Api.Controllers
                 return Ok(user);
             return NotFound($"{id}");
         }
-        [HttpPost("/users")]
-        public IActionResult CreateUser(User user)
+
+        [HttpGet("UsersCount")]
+        public IActionResult GetCount(string? nameFree)
+        {
+            return Ok(_userService.Count(nameFree));
+        }
+
+        [HttpPost]
+        public IActionResult CreateUser(CreateUserDto user)
         {
             var userNew = _userService.Create(user);
-            return Created($"/users/{userNew.Id}", userNew);
+            return Created($"/User/{userNew.Id}", userNew);
         }
-        [HttpPut("/users/{id}")]
-        public IActionResult UpdateUser(User user, int id)
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateUser(UpdateUserDto user, int id)
         {
-            user.Id = id;
-            var userUpdt = _userService.Update(user);
+            var userUpdt = _userService.Update(id, user);
             if (userUpdt != null)
                 return Ok(userUpdt);
-            return NotFound($"{id}");
+            return NotFound($"/{id}");
         }
-        [HttpDelete("/users/{id}")]
+
+        [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
             var userDlt = _userService.Delete(id);

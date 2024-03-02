@@ -16,7 +16,7 @@ namespace Todos.Api.Controllers
             _todoService = todoService;
         }
 
-        [HttpGet("todos")]
+        [HttpGet]
         public IActionResult GetListTodos(int? offset, string? LabelFreeText, int? ownerTodo, int? limit)
         {
             var todos = _todoService.GetListTodos(offset, LabelFreeText, ownerTodo, limit);
@@ -24,7 +24,8 @@ namespace Todos.Api.Controllers
             HttpContext.Response.Headers.Append("x-Total-Count", count.ToString());
             return Ok(todos);
         }
-        [HttpGet("todos/{id}")]
+
+        [HttpGet("{id}")]
         public IActionResult GetIdTodo(int id)
         {
             var todo = _todoService.GetIdTodo(id);
@@ -34,13 +35,20 @@ namespace Todos.Api.Controllers
                 return NotFound($"{id}");
         }
 
-        [HttpPost("todos")]
+        [HttpGet("UsersCount")]
+        public IActionResult GetCount(string? labelFree)
+        {
+            return Ok(_todoService.Count(labelFree));
+        }
+
+        [HttpPost]
         public IActionResult CreateTodo(CreateToDoDto createTodoDto)
         {
             var newToDo = _todoService.Create(createTodoDto);
-            return Created($"ToDo/todos/{newToDo.Id}", newToDo);
+            return Created($"ToDo/{newToDo.Id}", newToDo);
         }
-        [HttpPut("todos/{id}")]
+
+        [HttpPut("{id}")]
         public IActionResult UpdateTodo(int id, UpdateToDoDto updtTodoDto)
         {
             updtTodoDto.Id = id;
@@ -49,7 +57,8 @@ namespace Todos.Api.Controllers
                 return NotFound($"{id}");
             return Ok(updateTodo);
         }
-        [HttpDelete("todos")]
+
+        [HttpDelete]
         public IActionResult DeleteTodo([FromBody] int id)
         {
             var deleteTodo = _todoService.Delete(id);

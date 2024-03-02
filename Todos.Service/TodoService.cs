@@ -17,30 +17,36 @@ namespace Todos.Service
             _todoRepository = todoRepository;
             _userRepository = userRepository;
             _mapper = mapper;
-            todoRepository.Add(new ToDo { Id = 1, Label = "Label1", IsDone = false, OwnerId = 1 });
-            todoRepository.Add(new ToDo { Id = 2, Label = "Label2", IsDone = true, OwnerId = 2 });
-            todoRepository.Add(new ToDo { Id = 3, Label = "Label3", IsDone = false, OwnerId = 3 });
-            todoRepository.Add(new ToDo { Id = 4, Label = "Label4", IsDone = true, OwnerId = 4 });
-            todoRepository.Add(new ToDo { Id = 5, Label = "Label5", IsDone = false, OwnerId = 5 });
-            todoRepository.Add(new ToDo { Id = 6, Label = "Label6", IsDone = true, OwnerId = 6 });
-            todoRepository.Add(new ToDo { Id = 7, Label = "Label7", IsDone = false, OwnerId = 7 });
-            todoRepository.Add(new ToDo { Id = 8, Label = "Label8", IsDone = true, OwnerId = 8 });
-            todoRepository.Add(new ToDo { Id = 9, Label = "Label9", IsDone = false, OwnerId = 9 });
-            todoRepository.Add(new ToDo { Id = 10, Label = "Label10", IsDone = true, OwnerId = 10 });
-            todoRepository.Add(new ToDo { Id = 11, Label = "Label10", IsDone = true, OwnerId = 3 });
-            todoRepository.Add(new ToDo { Id = 12, Label = "Label7", IsDone = true, OwnerId = 3 });
 
+            if (_todoRepository.GetList().Length == 0)
+            {
+                todoRepository.Add(new ToDo { Id = 1, Label = "Label1", IsDone = false, OwnerId = 1 });
+                todoRepository.Add(new ToDo { Id = 2, Label = "Label2", IsDone = true, OwnerId = 2 });
+                todoRepository.Add(new ToDo { Id = 3, Label = "Label3", IsDone = false, OwnerId = 3 });
+                todoRepository.Add(new ToDo { Id = 4, Label = "Label4", IsDone = true, OwnerId = 4 });
+                todoRepository.Add(new ToDo { Id = 5, Label = "Label5", IsDone = false, OwnerId = 5 });
+                todoRepository.Add(new ToDo { Id = 6, Label = "Label6", IsDone = true, OwnerId = 6 });
+                todoRepository.Add(new ToDo { Id = 7, Label = "Label7", IsDone = false, OwnerId = 7 });
+                todoRepository.Add(new ToDo { Id = 8, Label = "Label8", IsDone = true, OwnerId = 8 });
+                todoRepository.Add(new ToDo { Id = 9, Label = "Label9", IsDone = false, OwnerId = 9 });
+                todoRepository.Add(new ToDo { Id = 10, Label = "Label10", IsDone = true, OwnerId = 10 });
+                todoRepository.Add(new ToDo { Id = 11, Label = "Label10", IsDone = true, OwnerId = 3 });
+                todoRepository.Add(new ToDo { Id = 12, Label = "Label7", IsDone = true, OwnerId = 3 });
+            }
 
-            userRepository.Add(new User { Id = 1, Name = "Tom" });
-            userRepository.Add(new User { Id = 2, Name = "Bob" });
-            userRepository.Add(new User { Id = 3, Name = "Allice" });
-            userRepository.Add(new User { Id = 4, Name = "John" });
-            userRepository.Add(new User { Id = 5, Name = "Marty" });
-            userRepository.Add(new User { Id = 6, Name = "Lionel" });
-            userRepository.Add(new User { Id = 7, Name = "Garry" });
-            userRepository.Add(new User { Id = 8, Name = "Tim" });
-            userRepository.Add(new User { Id = 9, Name = "Max" });
-            userRepository.Add(new User { Id = 10, Name = "Berta" });
+            if (_userRepository.GetList().Length == 0)
+            {
+                userRepository.Add(new User { Id = 1, Name = "Tom" });
+                userRepository.Add(new User { Id = 2, Name = "Bob" });
+                userRepository.Add(new User { Id = 3, Name = "Allice" });
+                userRepository.Add(new User { Id = 4, Name = "John" });
+                userRepository.Add(new User { Id = 5, Name = "Marty" });
+                userRepository.Add(new User { Id = 6, Name = "Lionel" });
+                userRepository.Add(new User { Id = 7, Name = "Garry" });
+                userRepository.Add(new User { Id = 8, Name = "Tim" });
+                userRepository.Add(new User { Id = 9, Name = "Max" });
+                userRepository.Add(new User { Id = 10, Name = "Berta" });
+            }
         }
 
         public IReadOnlyCollection<ToDo> GetListTodos(int? offset, string? labelFreeText, int? ownerTodo, int? limit = 7)
@@ -49,7 +55,7 @@ namespace Todos.Service
                 offset,
                 limit,
                 t => (string.IsNullOrWhiteSpace(labelFreeText) || t.Label.Contains(labelFreeText, StringComparison.InvariantCultureIgnoreCase)) && (ownerTodo == null || t.OwnerId == ownerTodo),
-                t=>t.Id);
+                t => t.Id);
         }
 
         public ToDo? GetIdTodo(int id)
@@ -69,6 +75,7 @@ namespace Todos.Service
 
             return _todoRepository.Add(todoEntity);
         }
+
         public ToDo? Update(UpdateToDoDto updateTodo)
         {
             var user = _userRepository.SingleOrDefault(i => i.Id == updateTodo.OwnerId);
@@ -85,6 +92,7 @@ namespace Todos.Service
 
             return _todoRepository.Update(todoEntity);
         }
+
         public bool Delete(int id)
         {
             var deletTo = GetIdTodo(id);
