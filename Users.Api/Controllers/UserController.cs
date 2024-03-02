@@ -17,6 +17,8 @@ namespace Users.Api.Controllers
         public IActionResult ListUsers(int? offset, string? nameFree, int? limit)
         {
             var users = _userService.GetListUsers(offset, nameFree, limit);
+            var count = _userService.Count(nameFree);
+            HttpContext.Response.Headers.Append("x-Total-Count", count.ToString());
             return Ok(users);
         }
         [HttpGet("/users/{id}")]

@@ -10,5 +10,6 @@ namespace Todos.Service
         ToDo? GetIdTodo(int id);
         IReadOnlyCollection<ToDo> GetListTodos(int? offset, string? labelFree, int? ownerTodo, int? limit = 7);
         ToDo? Update(UpdateToDoDto updateTodo);
+        int Count(string? labelFree);
     }
 }

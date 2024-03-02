@@ -20,6 +20,8 @@ namespace Todos.Api.Controllers
         public IActionResult GetListTodos(int? offset, string? LabelFreeText, int? ownerTodo, int? limit)
         {
             var todos = _todoService.GetListTodos(offset, LabelFreeText, ownerTodo, limit);
+            var count = _todoService.Count(LabelFreeText);
+            HttpContext.Response.Headers.Append("x-Total-Count", count.ToString());
             return Ok(todos);
         }
         [HttpGet("todos/{id}")]
@@ -36,7 +38,7 @@ namespace Todos.Api.Controllers
         public IActionResult CreateTodo(CreateToDoDto createTodoDto)
         {
             var newToDo = _todoService.Create(createTodoDto);
-            return Created($"ToDo/todos/{newToDo.Id}", createTodoDto);
+            return Created($"ToDo/todos/{newToDo.Id}", newToDo);
         }
         [HttpPut("todos/{id}")]
         public IActionResult UpdateTodo(int id, UpdateToDoDto updtTodoDto)
