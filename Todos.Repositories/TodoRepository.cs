@@ -48,7 +48,7 @@ namespace Todos.Repositories
 
         public ToDo AddTodo(ToDo toDo)
         {
-            toDo.Id = TodoList.Max(i => i.Id) + 1;
+            toDo.Id = TodoList.Count == 0 ? 1 : TodoList.Max(i => i.Id) + 1;
             TodoList.Add(toDo);
             return toDo;
         }

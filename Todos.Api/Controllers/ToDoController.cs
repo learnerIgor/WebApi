@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Todos.Domain;
 using Todos.Service;
+using Todos.Service.Dto;
 
 namespace Todos.Api.Controllers
 {
@@ -32,16 +33,16 @@ namespace Todos.Api.Controllers
         }
 
         [HttpPost("todos")]
-        public IActionResult CreateTodo(ToDo toDo)
+        public IActionResult CreateTodo(CreateToDoDto createTodoDto)
         {
-            var createTodo = _todoService.Create(toDo);
-            return Created($"ToDo/todos/{createTodo.Id}", createTodo);
+            var newToDo = _todoService.Create(createTodoDto);
+            return Created($"ToDo/todos/{newToDo.Id}", createTodoDto);
         }
         [HttpPut("todos/{id}")]
-        public IActionResult UpdateTodo(int id, ToDo toDo)
+        public IActionResult UpdateTodo(int id, UpdateToDoDto updtTodoDto)
         {
-            toDo.Id = id;
-            var updateTodo = _todoService.Update(toDo);
+            updtTodoDto.Id = id;
+            var updateTodo = _todoService.Update(updtTodoDto);
             if (updateTodo == null)
                 return NotFound($"{id}");
             return Ok(updateTodo);
