@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using Common.Domain;
 using Common.Repositories;
+using Newtonsoft.Json;
+using Serilog;
+using System.Text.Json.Serialization;
 using Todos.Domain;
 using Todos.Service.Dto;
 
@@ -63,15 +66,32 @@ namespace Todos.Service
             return _todoRepository.SingleOrDefault(i => i.Id == id);
         }
 
+        public object? GetIsDoneTodo(int id)
+        {
+            ToDo? todoDone = _todoRepository.SingleOrDefault(x => x.Id == id);
+            if (todoDone == null)
+            {
+                Log.Error($"There isn't todo with id {id} in list");
+                throw new Exception($"There isn't todo with id {id} in list");
+            }
+
+            return new { Id = todoDone.Id, IsDone = todoDone.IsDone };
+        }
+
         public ToDo Create(CreateToDoDto createTodo)
         {
             var user = _userRepository.SingleOrDefault(i => i.Id == createTodo.OwnerId);
             if (user == null)
+            {
+                Log.Error($"There isn't user with id {createTodo.OwnerId} in list");
                 throw new Exception($"There isn't user with id {createTodo.OwnerId} in list");
+            }
 
             var todoEntity = _mapper.Map<CreateToDoDto, ToDo>(createTodo);
             todoEntity.CreatedDate = DateTime.UtcNow;
             todoEntity.Id = _todoRepository.GetList().Count() == 0 ? 1 : _todoRepository.GetList().Max(i => i.Id) + 1;
+
+            Log.Information("Added new todo " + JsonConvert.SerializeObject(todoEntity));
 
             return _todoRepository.Add(todoEntity);
         }
@@ -80,24 +100,52 @@ namespace Todos.Service
         {
             var user = _userRepository.SingleOrDefault(i => i.Id == updateTodo.OwnerId);
             if (user == null)
+            {
+                Log.Error($"There isn't user with id {updateTodo.OwnerId} in list");
                 throw new Exception($"There isn't user with id {updateTodo.OwnerId} in list");
+            }
+
             var todoEntity = GetIdTodo(updateTodo.Id);
             if (todoEntity == null)
             {
+                Log.Error($"There isn't todo with id {updateTodo.Id} in list");
                 return null;
             }
 
             _mapper.Map(updateTodo, todoEntity);
             todoEntity.UpdatedDate = DateTime.UtcNow;
 
+            Log.Information("Updated todo " + JsonConvert.SerializeObject(todoEntity));
+
             return _todoRepository.Update(todoEntity);
+        }
+
+        public object? Patch(int id, bool isDone)
+        {
+            ToDo? todo = _todoRepository.SingleOrDefault(x => x.Id == id);
+            if (todo == null)
+            {
+                Log.Error($"There todo with id {id} in list");
+                throw new Exception($"There isn't todo with id {id} in list");
+            }
+
+            todo.IsDone = isDone;
+            _todoRepository.Update(todo);
+
+            Log.Information("Todo updated using Patch method " + JsonConvert.SerializeObject(todo));
+            return new { Id = todo.Id, IsDone = todo.IsDone };
         }
 
         public bool Delete(int id)
         {
             var deletTo = GetIdTodo(id);
             if (deletTo == null)
+            {
+                Log.Error($"There isn't todo with id {id} in list");
                 return false;
+            }
+
+            Log.Information("Deleted todo " + JsonConvert.SerializeObject(deletTo));
 
             return _todoRepository.Delete(deletTo);
         }

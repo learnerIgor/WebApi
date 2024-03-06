@@ -41,6 +41,16 @@ namespace Todos.Api.Controllers
             return Ok(_todoService.Count(labelFree));
         }
 
+        [HttpGet("{id}/IsDone")]
+        public IActionResult GetIsDone(int id)
+        {
+            var isDone = _todoService.GetIsDoneTodo(id);
+            if (isDone != null)
+                return Ok(isDone);
+            else
+                return NotFound(id);
+        }
+
         [HttpPost]
         public IActionResult CreateTodo(CreateToDoDto createTodoDto)
         {
@@ -63,6 +73,15 @@ namespace Todos.Api.Controllers
         {
             var deleteTodo = _todoService.Delete(id);
             return deleteTodo ? Ok() : NotFound();
+        }
+
+        [HttpPatch("{id}/isDone")]
+        public IActionResult PatchIsDone(int id, [FromBody] bool UpdateDone)
+        {
+            var isDone = _todoService.Patch(id, UpdateDone);
+            if (isDone != null)
+                return Ok(isDone);
+            else return NotFound();
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Common.Domain;
 using Common.Repositories;
+using Newtonsoft.Json;
+using Serilog;
 using Users.Service.Dto;
 
 namespace Users.Service
@@ -41,16 +43,28 @@ namespace Users.Service
 
         public User? GetIdUser(int id)
         {
-            return _userRepository.SingleOrDefault(x => x.Id == id);
+            User? user = _userRepository.SingleOrDefault(x => x.Id == id);
+            if (user == null)
+            {
+                Log.Error($"There isn't user with id {id} in list");
+                throw new Exception($"There isn't user with id {id} in list");
+            }
+
+            return user;
         }
 
         public User Create(CreateUserDto user)
         {
             if (string.IsNullOrEmpty(user.Name))
+            {
+                Log.Error("Incorrect user's name");
                 throw new Exception($"Invalid username");
+            }
 
             var userEntity = _mapper.Map<CreateUserDto, User>(user);
             userEntity.Id = _userRepository.GetList().Count() == 0 ? 1 : _userRepository.GetList().Max(i => i.Id) + 1;
+
+            Log.Information("Added new user " + JsonConvert.SerializeObject(userEntity));
 
             return _userRepository.Add(userEntity);
         }
@@ -58,15 +72,21 @@ namespace Users.Service
         public User? Update(int id, UpdateUserDto updtUser)
         {
             if (string.IsNullOrWhiteSpace(updtUser.Name))
+            {
+                Log.Error("Incorrect user's name");
                 throw new Exception($"Invalid username");
+            }
 
             var user = GetIdUser(id);
             if (user == null)
             {
+                Log.Error($"There isn't user with such id {id}");
                 return null;
             }
 
             _mapper.Map(updtUser, user);
+
+            Log.Information("Updated user " + JsonConvert.SerializeObject(user));
 
             return _userRepository.Update(user);
         }
@@ -75,7 +95,12 @@ namespace Users.Service
         {
             var deletUser = GetIdUser(id);
             if (deletUser == null)
+            {
+                Log.Error($"There isn't user with such id {id}");
                 return false;
+            }
+
+            Log.Information("Deleted user " + JsonConvert.SerializeObject(deletUser));
 
             return _userRepository.Delete(deletUser);
         }

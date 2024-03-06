@@ -3,6 +3,8 @@ using Common.Repositories;
 using Todos.Service.Mapping;
 using Todos.Domain;
 using Common.Domain;
+using FluentValidation;
+using System.Reflection;
 
 namespace Todos.Service
 {
@@ -14,6 +16,8 @@ namespace Todos.Service
             services.AddTransient<ITodoService, TodoService>();
             services.AddTransient<IRepository<User>, BaseRepository<User>>();
             services.AddTransient<IRepository<ToDo>, BaseRepository<ToDo>>();
+
+            services.AddValidatorsFromAssemblies(new[] { Assembly.GetExecutingAssembly() }, includeInternalTypes: true);
 
             return services;
         }
