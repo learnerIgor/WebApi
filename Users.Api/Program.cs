@@ -2,6 +2,7 @@ using Serilog;
 using Serilog.Events;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using Users.Service;
+using Common.Service;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -27,6 +28,8 @@ try
     builder.Host.UseSerilog();
 
     var app = builder.Build();
+
+    app.UseExceptionsHandler();
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())

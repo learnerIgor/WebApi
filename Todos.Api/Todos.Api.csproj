@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common.Api\Common.Service.csproj" />
     <ProjectReference Include="..\Common.Repositories\Common.Repositories.csproj" />
     <ProjectReference Include="..\Todos.Service\Todos.Service.csproj" />
   </ItemGroup>

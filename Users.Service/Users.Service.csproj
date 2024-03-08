@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common.Api\Common.Service.csproj" />
     <ProjectReference Include="..\Common.Repositories\Common.Repositories.csproj" />
   </ItemGroup>
 

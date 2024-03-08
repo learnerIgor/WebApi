@@ -7,7 +7,7 @@ namespace Users.Service.Validators
     {
         public CreateUserDtoValidator() 
         {
-            RuleFor(n => n.Name).MinimumLength(3).MaximumLength(20).NotNull().Must(n => n.All(char.IsLetter)).WithMessage("Incorret user's name");
+            RuleFor(n => n.Name).MinimumLength(3).MaximumLength(20).Must(n => n.All(char.IsLetter)).WithMessage("Incorret user's name");
         }
     }
 }

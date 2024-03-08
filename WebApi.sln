@@ -3,25 +3,27 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.Api", "Todos.Api\Todos.Api.csproj", "{C57E30E7-87E0-4D97-885C-A27A58A9EDAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Todos.Api", "Todos.Api\Todos.Api.csproj", "{C57E30E7-87E0-4D97-885C-A27A58A9EDAD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Todos", "Todos", "{A3CAC5C0-ABD6-4EAB-9A37-04E2A91DD851}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.Service", "Todos.Service\Todos.Service.csproj", "{7F360B8F-507E-44FA-A494-7FA77194D001}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Todos.Service", "Todos.Service\Todos.Service.csproj", "{7F360B8F-507E-44FA-A494-7FA77194D001}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.Repositories", "Todos.Repositories\Todos.Repositories.csproj", "{7AE13B0C-92D3-4CD3-9E13-B1B955C28BE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Todos.Repositories", "Todos.Repositories\Todos.Repositories.csproj", "{7AE13B0C-92D3-4CD3-9E13-B1B955C28BE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todos.Domain", "Todos.Domain\Todos.Domain.csproj", "{B9A864A4-4558-4120-B650-C11E1741BFB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Todos.Domain", "Todos.Domain\Todos.Domain.csproj", "{B9A864A4-4558-4120-B650-C11E1741BFB8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Users", "Users", "{E283A8E5-BE5F-4C6E-8BA3-21CF5DBB592D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Api", "Users.Api\Users.Api.csproj", "{FC32A9C0-9672-4E42-8A63-ACD8CDDD3F15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.Api", "Users.Api\Users.Api.csproj", "{FC32A9C0-9672-4E42-8A63-ACD8CDDD3F15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Service", "Users.Service\Users.Service.csproj", "{680B56D0-6561-4304-88C9-021CD39C2D0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.Service", "Users.Service\Users.Service.csproj", "{680B56D0-6561-4304-88C9-021CD39C2D0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Repositories", "Common.Repositories\Common.Repositories.csproj", "{127B1AB3-EAF2-4F13-9317-BEE97B516342}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Repositories", "Common.Repositories\Common.Repositories.csproj", "{127B1AB3-EAF2-4F13-9317-BEE97B516342}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Domain", "Common.Domain\Common.Domain.csproj", "{93036E91-DA3F-4B5E-BCC7-FC0DC4405E42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Domain", "Common.Domain\Common.Domain.csproj", "{93036E91-DA3F-4B5E-BCC7-FC0DC4405E42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Service", "Common.Api\Common.Service.csproj", "{454BCD3D-B89B-4F86-9DE6-2C2903A34046}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,10 @@ Global
 		{93036E91-DA3F-4B5E-BCC7-FC0DC4405E42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93036E91-DA3F-4B5E-BCC7-FC0DC4405E42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93036E91-DA3F-4B5E-BCC7-FC0DC4405E42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{454BCD3D-B89B-4F86-9DE6-2C2903A34046}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{454BCD3D-B89B-4F86-9DE6-2C2903A34046}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{454BCD3D-B89B-4F86-9DE6-2C2903A34046}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{454BCD3D-B89B-4F86-9DE6-2C2903A34046}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

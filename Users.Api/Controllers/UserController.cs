@@ -28,9 +28,7 @@ namespace Users.Api.Controllers
         public IActionResult GetUserById(int id)
         {
             var user = _userService.GetIdUser(id);
-            if (user != null)
-                return Ok(user);
-            return NotFound($"{id}");
+            return Ok(user);
         }
 
         [HttpGet("UsersCount")]
@@ -50,18 +48,14 @@ namespace Users.Api.Controllers
         public IActionResult UpdateUser(UpdateUserDto user, int id)
         {
             var userUpdt = _userService.Update(id, user);
-            if (userUpdt != null)
-                return Ok(userUpdt);
-            return NotFound($"/{id}");
+            return Ok(userUpdt);
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
-            var userDlt = _userService.Delete(id);
-            if (userDlt)
-                return Ok(userDlt);
-            return NotFound($"{id}");
+            _userService.Delete(id);
+            return Ok();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Todos.Service.Validators
         public UpdateToDoDtoValidator() 
         {
             RuleFor(o => o.OwnerId).GreaterThan(0).WithMessage("Incorrect OwnerId");
-            RuleFor(l => l.Label).MinimumLength(10).MaximumLength(100).Must(l => l.StartsWith("Label"));
+            RuleFor(l => l.Label).MinimumLength(10).MaximumLength(100);
         }
     }
 }

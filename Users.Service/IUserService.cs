@@ -6,10 +6,10 @@ namespace Users.Service
     public interface IUserService
     {
         User Create(CreateUserDto user);
-        bool Delete(int id);
-        User? GetIdUser(int id);
+        void Delete(int id);
+        User GetIdUser(int id);
         IReadOnlyCollection<User> GetListUsers(int? offset, string? nameFree, int? limit = 7);
-        User? Update(int id, UpdateUserDto user);
+        User Update(int id, UpdateUserDto user);
         int Count(string? nameFree);
     }
 }
