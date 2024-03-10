@@ -1,14 +1,14 @@
-﻿using Todos.Domain;
+﻿using Common.Domain;
 using Todos.Service.Dto;
 
 namespace Todos.Service
 {
     public interface ITodoService
     {
-        ToDo Create(CreateToDoDto createTodo);
+        Task<ToDo> CreateAsync(CreateToDoDto createTodo, CancellationToken cancellationToken);
         void Delete(int id);
-        ToDo GetIdTodo(int id);
-        object GetIsDoneTodo(int id);
+        Task<ToDo?> GetIdTodoAsync(int id, CancellationToken cancellationToken = default);
+        Task<object> GetIsDoneTodoAsync(int id, CancellationToken cancellationToken);
         IReadOnlyCollection<ToDo> GetListTodos(int? offset, string? labelFree, int? ownerTodo, int? limit = 7);
         ToDo Update(UpdateToDoDto updateTodo);
         object Patch(int id, bool isDone);

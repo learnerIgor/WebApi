@@ -4,8 +4,6 @@ using Common.Repositories;
 using Common.Service.Exceptions;
 using Newtonsoft.Json;
 using Serilog;
-using System.Text.Json.Serialization;
-using Todos.Domain;
 using Todos.Service.Dto;
 
 namespace Todos.Service
@@ -22,34 +20,34 @@ namespace Todos.Service
             _userRepository = userRepository;
             _mapper = mapper;
 
-            if (_todoRepository.GetList().Length == 0)
-            {
-                todoRepository.Add(new ToDo { Id = 1, Label = "Label1", IsDone = false, OwnerId = 1 });
-                todoRepository.Add(new ToDo { Id = 2, Label = "Label2", IsDone = true, OwnerId = 2 });
-                todoRepository.Add(new ToDo { Id = 3, Label = "Label3", IsDone = false, OwnerId = 3 });
-                todoRepository.Add(new ToDo { Id = 4, Label = "Label4", IsDone = true, OwnerId = 4 });
-                todoRepository.Add(new ToDo { Id = 5, Label = "Label5", IsDone = false, OwnerId = 5 });
-                todoRepository.Add(new ToDo { Id = 6, Label = "Label6", IsDone = true, OwnerId = 6 });
-                todoRepository.Add(new ToDo { Id = 7, Label = "Label7", IsDone = false, OwnerId = 7 });
-                todoRepository.Add(new ToDo { Id = 8, Label = "Label8", IsDone = true, OwnerId = 8 });
-                todoRepository.Add(new ToDo { Id = 9, Label = "Label9", IsDone = false, OwnerId = 9 });
-                todoRepository.Add(new ToDo { Id = 10, Label = "Label10", IsDone = true, OwnerId = 10 });
-                todoRepository.Add(new ToDo { Id = 11, Label = "Label10", IsDone = true, OwnerId = 3 });
-                todoRepository.Add(new ToDo { Id = 12, Label = "Label7", IsDone = true, OwnerId = 3 });
-            }
-
             if (_userRepository.GetList().Length == 0)
             {
-                userRepository.Add(new User { Id = 1, Name = "Tom" });
-                userRepository.Add(new User { Id = 2, Name = "Bob" });
-                userRepository.Add(new User { Id = 3, Name = "Allice" });
-                userRepository.Add(new User { Id = 4, Name = "John" });
-                userRepository.Add(new User { Id = 5, Name = "Marty" });
-                userRepository.Add(new User { Id = 6, Name = "Lionel" });
-                userRepository.Add(new User { Id = 7, Name = "Garry" });
-                userRepository.Add(new User { Id = 8, Name = "Tim" });
-                userRepository.Add(new User { Id = 9, Name = "Max" });
-                userRepository.Add(new User { Id = 10, Name = "Berta" });
+                userRepository.Add(new User { Name = "Tom" });
+                userRepository.Add(new User { Name = "Bob" });
+                userRepository.Add(new User { Name = "Allice" });
+                userRepository.Add(new User { Name = "John" });
+                userRepository.Add(new User { Name = "Marty" });
+                userRepository.Add(new User { Name = "Lionel" });
+                userRepository.Add(new User { Name = "Garry" });
+                userRepository.Add(new User { Name = "Tim" });
+                userRepository.Add(new User { Name = "Max" });
+                userRepository.Add(new User { Name = "Berta" });
+            }
+
+            if (_todoRepository.GetList().Length == 0)
+            {
+                todoRepository.Add(new ToDo { Label = "Label1", IsDone = false, UserId = 1 });
+                todoRepository.Add(new ToDo { Label = "Label2", IsDone = true, UserId = 2 });
+                todoRepository.Add(new ToDo { Label = "Label3", IsDone = false, UserId = 3 });
+                todoRepository.Add(new ToDo { Label = "Label4", IsDone = true, UserId = 4 });
+                todoRepository.Add(new ToDo { Label = "Label5", IsDone = false, UserId = 5 });
+                todoRepository.Add(new ToDo { Label = "Label6", IsDone = true, UserId = 6 });
+                todoRepository.Add(new ToDo { Label = "Label7", IsDone = false, UserId = 7 });
+                todoRepository.Add(new ToDo { Label = "Label8", IsDone = true, UserId = 8 });
+                todoRepository.Add(new ToDo { Label = "Label9", IsDone = false, UserId = 9 });
+                todoRepository.Add(new ToDo { Label = "Label10", IsDone = true, UserId = 10 });
+                todoRepository.Add(new ToDo { Label = "Label10", IsDone = true, UserId = 3 });
+                todoRepository.Add(new ToDo { Label = "Label7", IsDone = true, UserId = 3 });
             }
         }
 
@@ -58,24 +56,36 @@ namespace Todos.Service
             return _todoRepository.GetList(
                 offset,
                 limit,
-                t => (string.IsNullOrWhiteSpace(labelFreeText) || t.Label.Contains(labelFreeText, StringComparison.InvariantCultureIgnoreCase)) && (ownerTodo == null || t.OwnerId == ownerTodo),
+                t => (string.IsNullOrWhiteSpace(labelFreeText) || t.Label.Contains(labelFreeText, StringComparison.InvariantCultureIgnoreCase)) && (ownerTodo == null || t.UserId == ownerTodo),
                 t => t.Id);
         }
 
         public ToDo GetIdTodo(int id)
         {
             var todo = _todoRepository.SingleOrDefault(i => i.Id == id);
-            if (todo == null) 
+            if (todo == null)
             {
+                Log.Error($"There isn't todo with id {id} in list");
                 throw new NotFoundException(new { Id = id });
             }
 
             return todo;
         }
 
-        public object GetIsDoneTodo(int id)
+        public async Task<ToDo?> GetIdTodoAsync(int id, CancellationToken cancellationToken = default)
         {
-            ToDo? todoDone = _todoRepository.SingleOrDefault(x => x.Id == id);
+            ToDo? todo = await _todoRepository.SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
+            if (todo == null)
+            {
+                Log.Error($"There isn't todo with id {id} in list");
+                throw new NotFoundException(new { Id = id });
+            }
+            return todo;
+        }
+
+        public async Task<object> GetIsDoneTodoAsync(int id, CancellationToken cancellationToken)
+        {
+            ToDo? todoDone = await _todoRepository.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
             if (todoDone == null)
             {
                 Log.Error($"There isn't todo with id {id} in list");
@@ -85,29 +95,28 @@ namespace Todos.Service
             return new { Id = todoDone.Id, IsDone = todoDone.IsDone };
         }
 
-        public ToDo Create(CreateToDoDto createTodo)
+        public async Task<ToDo> CreateAsync(CreateToDoDto createTodo, CancellationToken cancellationToken)
         {
-            var user = _userRepository.SingleOrDefault(i => i.Id == createTodo.OwnerId);
+            var user = await _userRepository.SingleOrDefaultAsync(i => i.Id == createTodo.UserId, cancellationToken);
             if (user == null)
             {
-                Log.Error($"There isn't user with id {createTodo.OwnerId} in list");
-                throw new BadRequestException($"There isn't user with id {createTodo.OwnerId} in list");
+                Log.Error($"There isn't user with id {createTodo.UserId} in list");
+                throw new BadRequestException($"There isn't user with id {createTodo.UserId} in list");
             }
             var todoEntity = _mapper.Map<CreateToDoDto, ToDo>(createTodo);
             todoEntity.CreatedDate = DateTime.UtcNow;
-            todoEntity.Id = _todoRepository.GetList().Count() == 0 ? 1 : _todoRepository.GetList().Max(i => i.Id) + 1;
             Log.Information("Added new todo " + JsonConvert.SerializeObject(todoEntity));
 
-            return _todoRepository.Add(todoEntity);
+            return await _todoRepository.AddAsync(todoEntity, cancellationToken);
         }
 
         public ToDo Update(UpdateToDoDto updateTodo)
         {
-            var user = _userRepository.SingleOrDefault(i => i.Id == updateTodo.OwnerId);
+            var user = _userRepository.SingleOrDefault(i => i.Id == updateTodo.UserId);
             if (user == null)
             {
-                Log.Error($"There isn't user with id {updateTodo.OwnerId} in list");
-                throw new BadRequestException($"There isn't user with id {updateTodo.OwnerId} in list");
+                Log.Error($"There isn't user with id {updateTodo.UserId} in list");
+                throw new BadRequestException($"There isn't user with id {updateTodo.UserId} in list");
             }
             var todoEntity = GetIdTodo(updateTodo.Id);
             _mapper.Map(updateTodo, todoEntity);
@@ -141,7 +150,7 @@ namespace Todos.Service
 
         public int Count(string? labelFree)
         {
-            return _todoRepository.Count(labelFree == null ? null : c => c.Label.Contains(labelFree, StringComparison.CurrentCultureIgnoreCase));
+            return _todoRepository.Count(labelFree == null ? null : c => c.Label.Contains(labelFree));
         }
     }
 }

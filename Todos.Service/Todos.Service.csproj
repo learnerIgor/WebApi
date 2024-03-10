@@ -15,8 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common.Api\Common.Service.csproj" />
+    <ProjectReference Include="..\Common.Domain\Common.Domain.csproj" />
     <ProjectReference Include="..\Common.Repositories\Common.Repositories.csproj" />
+    <ProjectReference Include="..\Common.Service\Common.Service.csproj" />
     <ProjectReference Include="..\Todos.Domain\Todos.Domain.csproj" />
     <ProjectReference Include="..\Todos.Repositories\Todos.Repositories.csproj" />
   </ItemGroup>

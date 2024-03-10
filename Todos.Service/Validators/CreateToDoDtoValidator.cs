@@ -7,7 +7,7 @@ namespace Todos.Service.Validators
     {
         public CreateToDoDtoValidator() 
         {
-            RuleFor(o => o.OwnerId).GreaterThan(0).WithMessage("Incorrect OwnerId");
+            RuleFor(o => o.UserId).GreaterThan(0).WithMessage("Incorrect UserId");
             RuleFor(l => l.Label).MinimumLength(10).MaximumLength(100);
         }
     }

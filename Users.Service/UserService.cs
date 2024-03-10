@@ -20,16 +20,16 @@ namespace Users.Service
 
             if (_userRepository.GetList().Length == 0)
             {
-                userRepository.Add(new User { Id = 1, Name = "Tom" });
-                userRepository.Add(new User { Id = 2, Name = "Bob" });
-                userRepository.Add(new User { Id = 3, Name = "Allice" });
-                userRepository.Add(new User { Id = 4, Name = "John" });
-                userRepository.Add(new User { Id = 5, Name = "Marty" });
-                userRepository.Add(new User { Id = 6, Name = "Lionel" });
-                userRepository.Add(new User { Id = 7, Name = "Garry" });
-                userRepository.Add(new User { Id = 8, Name = "Tim" });
-                userRepository.Add(new User { Id = 9, Name = "Max" });
-                userRepository.Add(new User { Id = 10, Name = "Berta" });
+                userRepository.Add(new User { Name = "Tom" });
+                userRepository.Add(new User { Name = "Bob" });
+                userRepository.Add(new User { Name = "Allice" });
+                userRepository.Add(new User { Name = "John" });
+                userRepository.Add(new User { Name = "Marty" });
+                userRepository.Add(new User { Name = "Lionel" });
+                userRepository.Add(new User { Name = "Garry" });
+                userRepository.Add(new User { Name = "Tim" });
+                userRepository.Add(new User { Name = "Max" });
+                userRepository.Add(new User { Name = "Berta" });
             }
         }
 
@@ -54,7 +54,19 @@ namespace Users.Service
             return user;
         }
 
-        public User Create(CreateUserDto user)
+        public async Task<User> GetIdUserAsync(int id, CancellationToken cancellationToken)
+        {
+            User? user = await _userRepository.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+            if (user == null)
+            {
+                Log.Error($"There isn't user with id {id} in list");
+                throw new NotFoundException($"There isn't user with id {id} in list");
+            }
+
+            return user;
+        }
+
+        public async Task<User> CreateAsync(CreateUserDto user, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(user.Name))
             {
@@ -63,11 +75,10 @@ namespace Users.Service
             }
 
             var userEntity = _mapper.Map<CreateUserDto, User>(user);
-            userEntity.Id = _userRepository.GetList().Count() == 0 ? 1 : _userRepository.GetList().Max(i => i.Id) + 1;
 
             Log.Information("Added new user " + JsonConvert.SerializeObject(userEntity));
 
-            return _userRepository.Add(userEntity);
+            return await _userRepository.AddAsync(userEntity, cancellationToken);
         }
 
         public User Update(int id, UpdateUserDto updtUser)

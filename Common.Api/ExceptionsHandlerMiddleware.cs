@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Net;
 
-namespace Common.Service
+namespace Common.Api
 {
     public class ExceptionsHandlerMiddleware
     {
@@ -38,6 +38,11 @@ namespace Common.Service
                     default:
                         result = exceptions.Message;
                         break;
+                }
+
+                if (string.IsNullOrWhiteSpace(result))
+                {
+                    result = JsonConvert.SerializeObject(new { error = exceptions.Message, innerMessage = exceptions.InnerException?.Message, exceptions.StackTrace });
                 }
 
                 httpContext.Response.StatusCode = (int)statusCode;

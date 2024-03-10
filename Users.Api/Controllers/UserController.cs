@@ -25,9 +25,9 @@ namespace Users.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetUserById(int id)
+        public async Task <IActionResult> GetUserById(int id, CancellationToken cancellationToken)
         {
-            var user = _userService.GetIdUser(id);
+            var user = await _userService.GetIdUserAsync(id, cancellationToken);
             return Ok(user);
         }
 
@@ -38,9 +38,9 @@ namespace Users.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateUser(CreateUserDto user)
+        public async Task<IActionResult> CreateUser(CreateUserDto user, CancellationToken cancellationToken)
         {
-            var userNew = _userService.Create(user);
+            var userNew = await _userService.CreateAsync(user, cancellationToken);
             return Created($"/User/{userNew.Id}", userNew);
         }
 

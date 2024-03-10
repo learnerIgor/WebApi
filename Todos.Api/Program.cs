@@ -1,8 +1,10 @@
-using Common.Service;
 using Serilog;
 using Serilog.Events;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using Todos.Service;
+using Common.Api;
+using Common.Repositories;
+using System.Text.Json.Serialization;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -16,7 +18,7 @@ try
 
     // Add services to the container.
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers().AddJsonOptions(j => j.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
 
@@ -27,6 +29,8 @@ try
     builder.Services.AddSwaggerGen();
 
     builder.Host.UseSerilog();
+
+    builder.Services.AddTodosDatabase(builder.Configuration);
 
     var app = builder.Build();
 

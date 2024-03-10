@@ -1,4 +1,4 @@
-﻿namespace Todos.Domain
+﻿namespace Common.Domain
 {
     public class ToDo
     {
@@ -7,6 +7,8 @@
         public bool IsDone { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
-        public int OwnerId { get; set; }
+
+        public int UserId { get; set; }
+        public virtual User? User { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 
-namespace Common.Service
+namespace Common.Api
 {
     public static class ExceptionsHandlerMiddlewareExtensions
     {

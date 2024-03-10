@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Todos.Domain;
 using Todos.Service;
 using Todos.Service.Dto;
 
@@ -26,9 +25,9 @@ namespace Todos.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetIdTodo(int id)
+        public async Task<IActionResult> GetIdTodo(int id, CancellationToken cancellationToken)
         {
-            var todo = _todoService.GetIdTodo(id);
+            var todo = await _todoService.GetIdTodoAsync(id, cancellationToken);
             return Ok(todo);
         }
 
@@ -39,16 +38,16 @@ namespace Todos.Api.Controllers
         }
 
         [HttpGet("{id}/IsDone")]
-        public IActionResult GetIsDone(int id)
+        public async Task<IActionResult> GetIsDone(int id, CancellationToken cancellationToken)
         {
-            var isDone = _todoService.GetIsDoneTodo(id);
+            var isDone = await _todoService.GetIsDoneTodoAsync(id, cancellationToken);
             return Ok(isDone);
         }
 
         [HttpPost]
-        public IActionResult CreateTodo(CreateToDoDto createTodoDto)
+        public async Task<IActionResult> CreateTodo(CreateToDoDto createTodoDto, CancellationToken cancellationToken)
         {
-            var newToDo = _todoService.Create(createTodoDto);
+            var newToDo = await _todoService.CreateAsync(createTodoDto, cancellationToken);
             return Created($"ToDo/{newToDo.Id}", newToDo);
         }
 
