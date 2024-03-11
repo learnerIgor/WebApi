@@ -106,7 +106,7 @@ namespace Users.Service
 
         public int Count(string? nameFree)
         {
-            return _userRepository.Count(nameFree == null ? null : c => c.Name.Contains(nameFree, StringComparison.CurrentCultureIgnoreCase));
+            return _userRepository.Count(nameFree == null ? null : c => c.Name.Contains(nameFree));
         }
     }
 }
