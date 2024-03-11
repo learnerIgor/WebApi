@@ -54,7 +54,7 @@ namespace Users.Service
             return user;
         }
 
-        public async Task<User> GetIdUserAsync(int id, CancellationToken cancellationToken)
+        public async Task<User> GetUserByIdAsync(int id, CancellationToken cancellationToken)
         {
             User? user = await _userRepository.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
             if (user == null)

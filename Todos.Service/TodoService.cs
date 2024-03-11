@@ -72,7 +72,7 @@ namespace Todos.Service
             return todo;
         }
 
-        public async Task<ToDo?> GetIdTodoAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<ToDo?> GetToDoByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             ToDo? todo = await _todoRepository.SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
             if (todo == null)

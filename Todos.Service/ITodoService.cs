@@ -7,7 +7,7 @@ namespace Todos.Service
     {
         Task<ToDo> CreateAsync(CreateToDoDto createTodo, CancellationToken cancellationToken);
         void Delete(int id);
-        Task<ToDo?> GetIdTodoAsync(int id, CancellationToken cancellationToken = default);
+        Task<ToDo?> GetToDoByIdAsync(int id, CancellationToken cancellationToken = default);
         Task<object> GetIsDoneTodoAsync(int id, CancellationToken cancellationToken);
         IReadOnlyCollection<ToDo> GetListTodos(int? offset, string? labelFree, int? ownerTodo, int? limit = 7);
         ToDo Update(UpdateToDoDto updateTodo);

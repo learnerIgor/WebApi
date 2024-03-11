@@ -27,7 +27,7 @@ namespace Todos.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIdTodo(int id, CancellationToken cancellationToken)
         {
-            var todo = await _todoService.GetIdTodoAsync(id, cancellationToken);
+            var todo = await _todoService.GetToDoByIdAsync(id, cancellationToken);
             return Ok(todo);
         }
 

@@ -27,7 +27,7 @@ namespace Users.Api.Controllers
         [HttpGet("{id}")]
         public async Task <IActionResult> GetUserById(int id, CancellationToken cancellationToken)
         {
-            var user = await _userService.GetIdUserAsync(id, cancellationToken);
+            var user = await _userService.GetUserByIdAsync(id, cancellationToken);
             return Ok(user);
         }
 
