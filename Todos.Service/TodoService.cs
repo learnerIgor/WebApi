@@ -20,49 +20,49 @@ namespace Todos.Service
             _userRepository = userRepository;
             _mapper = mapper;
 
-            if (_userRepository.GetList().Length == 0)
-            {
-                userRepository.Add(new User { Name = "Tom" });
-                userRepository.Add(new User { Name = "Bob" });
-                userRepository.Add(new User { Name = "Allice" });
-                userRepository.Add(new User { Name = "John" });
-                userRepository.Add(new User { Name = "Marty" });
-                userRepository.Add(new User { Name = "Lionel" });
-                userRepository.Add(new User { Name = "Garry" });
-                userRepository.Add(new User { Name = "Tim" });
-                userRepository.Add(new User { Name = "Max" });
-                userRepository.Add(new User { Name = "Berta" });
-            }
+            //if (_userRepository.GetList().Length == 0)
+            //{
+            //    userRepository.Add(new User { Name = "Tom" });
+            //    userRepository.Add(new User { Name = "Bob" });
+            //    userRepository.Add(new User { Name = "Allice" });
+            //    userRepository.Add(new User { Name = "John" });
+            //    userRepository.Add(new User { Name = "Marty" });
+            //    userRepository.Add(new User { Name = "Lionel" });
+            //    userRepository.Add(new User { Name = "Garry" });
+            //    userRepository.Add(new User { Name = "Tim" });
+            //    userRepository.Add(new User { Name = "Max" });
+            //    userRepository.Add(new User { Name = "Berta" });
+            //}
 
-            if (_todoRepository.GetList().Length == 0)
-            {
-                todoRepository.Add(new ToDo { Label = "Label1", IsDone = false, UserId = 1 });
-                todoRepository.Add(new ToDo { Label = "Label2", IsDone = true, UserId = 2 });
-                todoRepository.Add(new ToDo { Label = "Label3", IsDone = false, UserId = 3 });
-                todoRepository.Add(new ToDo { Label = "Label4", IsDone = true, UserId = 4 });
-                todoRepository.Add(new ToDo { Label = "Label5", IsDone = false, UserId = 5 });
-                todoRepository.Add(new ToDo { Label = "Label6", IsDone = true, UserId = 6 });
-                todoRepository.Add(new ToDo { Label = "Label7", IsDone = false, UserId = 7 });
-                todoRepository.Add(new ToDo { Label = "Label8", IsDone = true, UserId = 8 });
-                todoRepository.Add(new ToDo { Label = "Label9", IsDone = false, UserId = 9 });
-                todoRepository.Add(new ToDo { Label = "Label10", IsDone = true, UserId = 10 });
-                todoRepository.Add(new ToDo { Label = "Label10", IsDone = true, UserId = 3 });
-                todoRepository.Add(new ToDo { Label = "Label7", IsDone = true, UserId = 3 });
-            }
+            //if (_todoRepository.GetList().Length == 0)
+            //{
+            //    todoRepository.Add(new ToDo { Label = "Label1", IsDone = false, UserId = 1 });
+            //    todoRepository.Add(new ToDo { Label = "Label2", IsDone = true, UserId = 2 });
+            //    todoRepository.Add(new ToDo { Label = "Label3", IsDone = false, UserId = 3 });
+            //    todoRepository.Add(new ToDo { Label = "Label4", IsDone = true, UserId = 4 });
+            //    todoRepository.Add(new ToDo { Label = "Label5", IsDone = false, UserId = 5 });
+            //    todoRepository.Add(new ToDo { Label = "Label6", IsDone = true, UserId = 6 });
+            //    todoRepository.Add(new ToDo { Label = "Label7", IsDone = false, UserId = 7 });
+            //    todoRepository.Add(new ToDo { Label = "Label8", IsDone = true, UserId = 8 });
+            //    todoRepository.Add(new ToDo { Label = "Label9", IsDone = false, UserId = 9 });
+            //    todoRepository.Add(new ToDo { Label = "Label10", IsDone = true, UserId = 10 });
+            //    todoRepository.Add(new ToDo { Label = "Label10", IsDone = true, UserId = 3 });
+            //    todoRepository.Add(new ToDo { Label = "Label7", IsDone = true, UserId = 3 });
+            //}
         }
 
-        public IReadOnlyCollection<ToDo> GetListTodos(int? offset, string? labelFreeText, int? ownerTodo, int? limit = 7)
+        public async Task<IReadOnlyCollection<ToDo>> GetListTodosAsync(int? offset, string? labelFreeText, int? ownerTodo, int? limit = 7, CancellationToken cancellationToken = default)
         {
-            return _todoRepository.GetList(
-                offset,
-                limit,
-                t => (string.IsNullOrWhiteSpace(labelFreeText) || t.Label.Contains(labelFreeText, StringComparison.InvariantCultureIgnoreCase)) && (ownerTodo == null || t.UserId == ownerTodo),
-                t => t.Id);
+            return await _todoRepository.GetListAsync(
+                offset, 
+                limit, t => (string.IsNullOrWhiteSpace(labelFreeText) || t.Label.Contains(labelFreeText, StringComparison.InvariantCultureIgnoreCase)) && (ownerTodo == null || t.UserId == ownerTodo), 
+                t => t.Id, 
+                cancellationToken: cancellationToken);
         }
 
-        public ToDo GetIdTodo(int id)
+        public async Task<ToDo> GetIdTodoAsync(int id, CancellationToken cancellationToken)
         {
-            var todo = _todoRepository.SingleOrDefault(i => i.Id == id);
+            var todo = await _todoRepository.SingleOrDefaultAsync(i => i.Id == id, cancellationToken);
             if (todo == null)
             {
                 Log.Error($"There isn't todo with id {id} in list");
@@ -110,42 +110,42 @@ namespace Todos.Service
             return await _todoRepository.AddAsync(todoEntity, cancellationToken);
         }
 
-        public ToDo Update(UpdateToDoDto updateTodo)
+        public async Task<ToDo> UpdateAsync(UpdateToDoDto updateTodo, CancellationToken cancellationToken)
         {
-            var user = _userRepository.SingleOrDefault(i => i.Id == updateTodo.UserId);
+            var user = await _userRepository.SingleOrDefaultAsync(i => i.Id == updateTodo.UserId, cancellationToken);
             if (user == null)
             {
                 Log.Error($"There isn't user with id {updateTodo.UserId} in list");
                 throw new BadRequestException($"There isn't user with id {updateTodo.UserId} in list");
             }
-            var todoEntity = GetIdTodo(updateTodo.Id);
+            var todoEntity = await GetIdTodoAsync(updateTodo.Id, cancellationToken);
             _mapper.Map(updateTodo, todoEntity);
             todoEntity.UpdatedDate = DateTime.UtcNow;
             Log.Information("Updated todo " + JsonConvert.SerializeObject(todoEntity));
 
-            return _todoRepository.Update(todoEntity);
+            return await _todoRepository.UpdateAsync(todoEntity, cancellationToken);
         }
 
-        public object Patch(int id, bool isDone)
+        public async Task<object> PatchAsync(int id, bool isDone, CancellationToken cancellationToken)
         {
-            ToDo? todo = _todoRepository.SingleOrDefault(x => x.Id == id);
+            ToDo? todo = await _todoRepository.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
             if (todo == null)
             {
                 Log.Error($"There todo with id {id} in list");
                 throw new BadRequestException($"There isn't todo with id {id} in list");
             }
             todo.IsDone = isDone;
-            _todoRepository.Update(todo);
+            await _todoRepository.UpdateAsync(todo, cancellationToken);
             Log.Information("Todo updated using Patch method " + JsonConvert.SerializeObject(todo));
 
             return new { Id = todo.Id, IsDone = todo.IsDone };
         }
 
-        public void Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            var deletTo = GetIdTodo(id);
+            var deletTo = await GetIdTodoAsync(id, cancellationToken);
             Log.Information("Deleted todo " + JsonConvert.SerializeObject(deletTo));
-            _todoRepository.Delete(deletTo);
+            return await _todoRepository.DeleteAsync(deletTo, cancellationToken);
         }
 
         public int Count(string? labelFree)

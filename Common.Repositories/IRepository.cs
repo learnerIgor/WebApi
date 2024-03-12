@@ -4,18 +4,17 @@ namespace Common.Repositories
 {
     public interface IRepository<TEntity> where TEntity : class, new()
     {
-        TEntity[] GetList(
+        Task<TEntity[]> GetListAsync(
             int? offset = null,
             int? limit = null,
             Expression<Func<TEntity, bool>>? predicate = null,
             Expression<Func<TEntity, object>>? orderBy = null,
-            bool? descending = null);
-        TEntity? SingleOrDefault(Expression<Func<TEntity, bool>>? predicate = null);
+            bool? descending = null,
+            CancellationToken cancellationToken = default);
         Task<TEntity?> SingleOrDefaultAsync(Expression<Func<TEntity, bool>>? predicate, CancellationToken cancellationToken);
         int Count(Expression<Func<TEntity, bool>>? predicate = null);
-        TEntity Add(TEntity toDo);
         Task<TEntity> AddAsync(TEntity toDo, CancellationToken cancellationToken);
-        TEntity Update(TEntity toDo);
-        bool Delete(TEntity toDo);
+        Task<TEntity> UpdateAsync(TEntity toDo, CancellationToken cancellationToken);
+        Task<bool> DeleteAsync(TEntity toDo, CancellationToken cancellationToken);
     }
 }

@@ -12,8 +12,8 @@ namespace Common.Repositories
             _applicationDbContext = applicationDbContext;
         }
 
-        public TEntity[] GetList(int? offset = null, int? limit = null, Expression<Func<TEntity, bool>>? predicate = null, Expression<Func<TEntity, object>>? orderBy = null,
-            bool? descending = null)
+        public async Task<TEntity[]> GetListAsync(int? offset = null, int? limit = null, Expression<Func<TEntity, bool>>? predicate = null, Expression<Func<TEntity, object>>? orderBy = null,
+            bool? descending = null, CancellationToken cancellationToken = default)
         {
             var queryable = _applicationDbContext.Set<TEntity>().AsQueryable();
 
@@ -37,13 +37,7 @@ namespace Common.Repositories
                 queryable = queryable.Take(limit.Value);
             }
 
-            return queryable.ToArray();
-        }
-
-        public TEntity? SingleOrDefault(Expression<Func<TEntity, bool>>? predicate = null)
-        {
-            var set = _applicationDbContext.Set<TEntity>();
-            return predicate == null ? set.SingleOrDefault() : set.SingleOrDefault(predicate);
+            return await queryable.ToArrayAsync(cancellationToken);
         }
 
         public async Task<TEntity?> SingleOrDefaultAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken cancellationToken = default)
@@ -58,14 +52,6 @@ namespace Common.Repositories
             return predicate == null ? set.Count() : set.Count(predicate);
         }
 
-        public TEntity Add(TEntity entityAdd)
-        {
-            var set = _applicationDbContext.Set<TEntity>();
-            set.Add(entityAdd);
-            _applicationDbContext.SaveChanges();
-            return entityAdd;
-        }
-
         public async Task<TEntity> AddAsync(TEntity toDo, CancellationToken cancellationToken)
         {
             var set = _applicationDbContext.Set<TEntity>();
@@ -74,19 +60,19 @@ namespace Common.Repositories
             return toDo;
         }
 
-        public TEntity Update(TEntity bookUpdate)
+        public async Task<TEntity> UpdateAsync(TEntity bookUpdate, CancellationToken cancellationToken)
         {
             var set = _applicationDbContext.Set<TEntity>();
             set.Update(bookUpdate);
-            _applicationDbContext.SaveChanges();
+            await _applicationDbContext.SaveChangesAsync(cancellationToken);
             return bookUpdate;
         }
 
-        public bool Delete(TEntity bookDelete)
+        public async Task<bool> DeleteAsync(TEntity bookDelete, CancellationToken cancellationToken)
         {
             var set = _applicationDbContext.Set<TEntity>();
             set.Remove(bookDelete);
-            return _applicationDbContext.SaveChanges() > 0;
+            return await _applicationDbContext.SaveChangesAsync(cancellationToken) > 0;
         }
     }
 }

@@ -4,6 +4,7 @@ using Common.Repositories;
 using Common.Service.Exceptions;
 using Newtonsoft.Json;
 using Serilog;
+using System.Threading;
 using Users.Service.Dto;
 
 namespace Users.Service
@@ -18,33 +19,29 @@ namespace Users.Service
             _userRepository = userRepository;
             _mapper = mapper;
 
-            if (_userRepository.GetList().Length == 0)
-            {
-                userRepository.Add(new User { Name = "Tom" });
-                userRepository.Add(new User { Name = "Bob" });
-                userRepository.Add(new User { Name = "Allice" });
-                userRepository.Add(new User { Name = "John" });
-                userRepository.Add(new User { Name = "Marty" });
-                userRepository.Add(new User { Name = "Lionel" });
-                userRepository.Add(new User { Name = "Garry" });
-                userRepository.Add(new User { Name = "Tim" });
-                userRepository.Add(new User { Name = "Max" });
-                userRepository.Add(new User { Name = "Berta" });
-            }
+            //if (_userRepository.GetListAsync(). == 0)
+            //{
+            //    userRepository.Add(new User { Name = "Tom" });
+            //    userRepository.Add(new User { Name = "Bob" });
+            //    userRepository.Add(new User { Name = "Allice" });
+            //    userRepository.Add(new User { Name = "John" });
+            //    userRepository.Add(new User { Name = "Marty" });
+            //    userRepository.Add(new User { Name = "Lionel" });
+            //    userRepository.Add(new User { Name = "Garry" });
+            //    userRepository.Add(new User { Name = "Tim" });
+            //    userRepository.Add(new User { Name = "Max" });
+            //    userRepository.Add(new User { Name = "Berta" });
+            //}
         }
 
-        public IReadOnlyCollection<User> GetListUsers(int? offset, string? nameFree, int? limit = 6)
+        public async Task<IReadOnlyCollection<User>> GetListUsersAsync(int? offset, string? nameFree, int? limit = 7, CancellationToken cancellationToken = default)
         {
-            return _userRepository.GetList(
-                offset,
-                limit,
-                nameFree == null ? null : l => l.Name.Contains(nameFree),
-                u => u.Id);
+            return await _userRepository.GetListAsync(offset, limit, nameFree == null ? null : l => l.Name.Contains(nameFree), u => u.Id, cancellationToken: cancellationToken);
         }
 
-        public User GetIdUser(int id)
+        public async Task<User> GetIdUserAsync(int id, CancellationToken cancellationToken)
         {
-            User? user = _userRepository.SingleOrDefault(x => x.Id == id);
+            User? user = await _userRepository.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
             if (user == null)
             {
                 Log.Error($"There isn't user with id {id} in list");
@@ -81,7 +78,7 @@ namespace Users.Service
             return await _userRepository.AddAsync(userEntity, cancellationToken);
         }
 
-        public User Update(int id, UpdateUserDto updtUser)
+        public async Task<User> UpdateAsync(int id, UpdateUserDto updtUser, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(updtUser.Name))
             {
@@ -89,19 +86,19 @@ namespace Users.Service
                 throw new BadRequestException($"Invalid username");
             }
 
-            var user = GetIdUser(id);
+            var user = await GetIdUserAsync(id, cancellationToken);
             _mapper.Map(updtUser, user);
 
             Log.Information("Updated user " + JsonConvert.SerializeObject(user));
 
-            return _userRepository.Update(user);
+            return await _userRepository.UpdateAsync(user, cancellationToken);
         }
 
-        public void Delete(int id)
+        public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            var deletUser = GetIdUser(id);
-            _userRepository.Delete(deletUser);
+            var deletUser = await GetIdUserAsync(id, cancellationToken);
             Log.Information("Deleted user " + JsonConvert.SerializeObject(deletUser));
+            return await _userRepository.DeleteAsync(deletUser, cancellationToken); 
         }
 
         public int Count(string? nameFree)

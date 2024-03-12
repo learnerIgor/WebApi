@@ -6,10 +6,10 @@ namespace Users.Service
     public interface IUserService
     {
         Task<User> CreateAsync(CreateUserDto user, CancellationToken cancellationToken);
-        void Delete(int id);
+        Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
         Task<User> GetUserByIdAsync(int id, CancellationToken cancellationToken);
-        IReadOnlyCollection<User> GetListUsers(int? offset, string? nameFree, int? limit = 7);
-        User Update(int id, UpdateUserDto user);
+        Task <IReadOnlyCollection<User>> GetListUsersAsync(int? offset, string? nameFree, int? limit = 7, CancellationToken cancellationToken = default);
+        Task<User> UpdateAsync(int id, UpdateUserDto user, CancellationToken cancellationToken);
         int Count(string? nameFree);
     }
 }

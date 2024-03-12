@@ -16,16 +16,16 @@ namespace Todos.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetListTodos(int? offset, string? LabelFreeText, int? ownerTodo, int? limit)
+        public async Task<IActionResult> GetListTodos(int? offset, string? LabelFreeText, int? ownerTodo, int? limit, CancellationToken cancellationToken)
         {
-            var todos = _todoService.GetListTodos(offset, LabelFreeText, ownerTodo, limit);
+            var todos = await _todoService.GetListTodosAsync(offset, LabelFreeText, ownerTodo, limit, cancellationToken);
             var count = _todoService.Count(LabelFreeText);
             HttpContext.Response.Headers.Append("x-Total-Count", count.ToString());
             return Ok(todos);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetIdTodo(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetTodoById(int id, CancellationToken cancellationToken)
         {
             var todo = await _todoService.GetToDoByIdAsync(id, cancellationToken);
             return Ok(todo);
@@ -52,24 +52,24 @@ namespace Todos.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateTodo(int id, UpdateToDoDto updtTodoDto)
+        public async Task<IActionResult> UpdateTodo(int id, UpdateToDoDto updtTodoDto, CancellationToken cancellationToken)
         {
             updtTodoDto.Id = id;
-            var updateTodo = _todoService.Update(updtTodoDto);
+            var updateTodo = await _todoService.UpdateAsync(updtTodoDto, cancellationToken);
             return Ok(updateTodo);
         }
 
         [HttpDelete]
-        public IActionResult DeleteTodo([FromBody] int id)
+        public async Task<IActionResult> DeleteTodo([FromBody] int id, CancellationToken cancellationToken)
         {
-            _todoService.Delete(id);
-            return Ok();
+            var result = await _todoService.DeleteAsync(id, cancellationToken);
+            return Ok(result);
         }
 
         [HttpPatch("{id}/isDone")]
-        public IActionResult PatchIsDone(int id, [FromBody] bool UpdateDone)
+        public async Task<IActionResult> PatchIsDone(int id, [FromBody] bool UpdateDone, CancellationToken cancellationToken)
         {
-            var isDone = _todoService.Patch(id, UpdateDone);
+            var isDone = await _todoService.PatchAsync(id, UpdateDone, cancellationToken);
             return Ok(isDone);
         }
     }

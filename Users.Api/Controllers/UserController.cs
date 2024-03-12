@@ -16,9 +16,9 @@ namespace Users.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult ListUsers(int? offset, string? nameFree, int? limit)
+        public async Task<IActionResult> ListUsers(int? offset, string? nameFree, int? limit, CancellationToken cancellationToken)
         {
-            var users = _userService.GetListUsers(offset, nameFree, limit);
+            var users = await _userService.GetListUsersAsync(offset, nameFree, limit, cancellationToken);
             var count = _userService.Count(nameFree);
             HttpContext.Response.Headers.Append("x-Total-Count", count.ToString());
             return Ok(users);
@@ -45,17 +45,17 @@ namespace Users.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateUser(UpdateUserDto user, int id)
+        public async Task<IActionResult> UpdateUser(UpdateUserDto user, int id, CancellationToken cancellationToken)
         {
-            var userUpdt = _userService.Update(id, user);
+            var userUpdt = await _userService.UpdateAsync(id, user, cancellationToken);
             return Ok(userUpdt);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(int id, CancellationToken cancellationToken)
         {
-            _userService.Delete(id);
-            return Ok();
+            var result = await _userService.DeleteAsync(id, cancellationToken);
+            return Ok(result);
         }
     }
 }
