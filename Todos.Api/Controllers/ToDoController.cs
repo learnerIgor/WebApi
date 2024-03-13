@@ -19,7 +19,7 @@ namespace Todos.Api.Controllers
         public async Task<IActionResult> GetListTodos(int? offset, string? LabelFreeText, int? ownerTodo, int? limit, CancellationToken cancellationToken)
         {
             var todos = await _todoService.GetListTodosAsync(offset, LabelFreeText, ownerTodo, limit, cancellationToken);
-            var count = _todoService.Count(LabelFreeText);
+            var count = await _todoService.CountAsync(LabelFreeText, cancellationToken);
             HttpContext.Response.Headers.Append("x-Total-Count", count.ToString());
             return Ok(todos);
         }
@@ -27,14 +27,14 @@ namespace Todos.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTodoById(int id, CancellationToken cancellationToken)
         {
-            var todo = await _todoService.GetToDoByIdAsync(id, cancellationToken);
+            var todo = await _todoService.GetToDoByIdOrDefaultAsync(id, cancellationToken);
             return Ok(todo);
         }
 
         [HttpGet("UsersCount")]
-        public IActionResult GetCount(string? labelFree)
+        public async Task<IActionResult> GetCount(string? labelFree, CancellationToken cancellationToken)
         {
-            return Ok(_todoService.Count(labelFree));
+            return Ok(await _todoService.CountAsync(labelFree, cancellationToken));
         }
 
         [HttpGet("{id}/IsDone")]

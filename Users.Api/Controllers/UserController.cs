@@ -19,7 +19,7 @@ namespace Users.Api.Controllers
         public async Task<IActionResult> ListUsers(int? offset, string? nameFree, int? limit, CancellationToken cancellationToken)
         {
             var users = await _userService.GetListUsersAsync(offset, nameFree, limit, cancellationToken);
-            var count = _userService.Count(nameFree);
+            var count = await _userService.CountAsync(nameFree, cancellationToken);
             HttpContext.Response.Headers.Append("x-Total-Count", count.ToString());
             return Ok(users);
         }
@@ -27,14 +27,14 @@ namespace Users.Api.Controllers
         [HttpGet("{id}")]
         public async Task <IActionResult> GetUserById(int id, CancellationToken cancellationToken)
         {
-            var user = await _userService.GetUserByIdAsync(id, cancellationToken);
+            var user = await _userService.GetUserByIdOrDefaultAsync(id, cancellationToken);
             return Ok(user);
         }
 
         [HttpGet("UsersCount")]
-        public IActionResult GetCount(string? nameFree)
+        public async Task<IActionResult> GetCount(string? nameFree, CancellationToken cancellationToken)
         {
-            return Ok(_userService.Count(nameFree));
+            return Ok(await _userService.CountAsync(nameFree, cancellationToken));
         }
 
         [HttpPost]

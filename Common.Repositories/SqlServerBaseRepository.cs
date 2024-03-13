@@ -74,5 +74,11 @@ namespace Common.Repositories
             set.Remove(bookDelete);
             return await _applicationDbContext.SaveChangesAsync(cancellationToken) > 0;
         }
+
+        public Task<int> CountAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken cancellationToken = default)
+        {
+            var set = _applicationDbContext.Set<TEntity>();
+            return predicate == null ? set.CountAsync(cancellationToken) : set.CountAsync(predicate, cancellationToken);
+        }
     }
 }

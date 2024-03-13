@@ -12,7 +12,7 @@ namespace Common.Repositories
             bool? descending = null,
             CancellationToken cancellationToken = default);
         Task<TEntity?> SingleOrDefaultAsync(Expression<Func<TEntity, bool>>? predicate, CancellationToken cancellationToken);
-        int Count(Expression<Func<TEntity, bool>>? predicate = null);
+        Task<int> CountAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken cancellationToken = default);
         Task<TEntity> AddAsync(TEntity toDo, CancellationToken cancellationToken);
         Task<TEntity> UpdateAsync(TEntity toDo, CancellationToken cancellationToken);
         Task<bool> DeleteAsync(TEntity toDo, CancellationToken cancellationToken);
