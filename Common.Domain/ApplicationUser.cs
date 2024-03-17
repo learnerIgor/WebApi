@@ -11,9 +11,9 @@ namespace Common.Domain
 
         [JsonIgnore]
         [IgnoreDataMember]
-        public virtual List<ToDo> ToDos { get; set; } = new();
+        public List<ToDo> ToDos { get; set; } = new();
 
-        public IEnumerable<ApplicationUserApplicationRole> Roles { get; set; } = default!;
+        public List<ApplicationUserApplicationRole> Roles { get; set; } = new();
 
         public virtual List<RefreshToken> RefreshTokens { get; set; } = new();
     }

@@ -5,6 +5,6 @@
         public int Id { get; set; }
         public string Name { get; set; } = default!;
 
-        public IEnumerable<ApplicationUserApplicationRole> Users { get; set; } = default!;
+        public List<ApplicationUserApplicationRole> Users { get; set; } = new();
     }
 }

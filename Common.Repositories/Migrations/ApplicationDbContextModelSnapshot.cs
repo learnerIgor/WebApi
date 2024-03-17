@@ -44,7 +44,7 @@ namespace Common.Repositories.Migrations
                     b.HasIndex("Login")
                         .IsUnique();
 
-                    b.ToTable("ApplicationUsers");
+                    b.ToTable("ApplicationUsers", (string)null);
                 });
 
             modelBuilder.Entity("Common.Domain.ApplicationUserApplicationRole", b =>
@@ -59,7 +59,7 @@ namespace Common.Repositories.Migrations
 
                     b.HasIndex("ApplicationUserRoleId");
 
-                    b.ToTable("ApplicationUserApplicationRole");
+                    b.ToTable("ApplicationUserApplicationRole", (string)null);
                 });
 
             modelBuilder.Entity("Common.Domain.ApplicationUserRole", b =>
@@ -77,7 +77,7 @@ namespace Common.Repositories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ApplicationUserRoles");
+                    b.ToTable("ApplicationUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Common.Domain.RefreshToken", b =>
@@ -94,7 +94,7 @@ namespace Common.Repositories.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Common.Domain.ToDo", b =>
@@ -127,7 +127,7 @@ namespace Common.Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ToDos");
+                    b.ToTable("ToDos", (string)null);
                 });
 
             modelBuilder.Entity("Common.Domain.ApplicationUserApplicationRole", b =>

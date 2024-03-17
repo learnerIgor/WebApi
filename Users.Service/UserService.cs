@@ -60,7 +60,7 @@ namespace Users.Service
             {
                 Login = userDto.Login,
                 PasswordHash = PasswordHasher.HashPassword(userDto.Password),
-                Roles = new[] { new ApplicationUserApplicationRole { ApplicationUserRoleId = userRole.Id } }
+                Roles = new() { new ApplicationUserApplicationRole { ApplicationUserRoleId = userRole.Id } }
             };
             Log.Information("Added new user " + JsonConvert.SerializeObject(entity));
 
