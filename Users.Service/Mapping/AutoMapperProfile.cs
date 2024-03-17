@@ -8,8 +8,10 @@ namespace Users.Service.Mapping
     {
         public AutoMapperProfile()
         {
-            CreateMap<CreateUserDto, User>();
-            CreateMap<UpdateUserDto, User>();
+            CreateMap<CreateUserDto, ApplicationUser>();
+            CreateMap<UpdateUserDto, ApplicationUser>();
+            CreateMap<UpdatePasswordDto, ApplicationUser>();
+            CreateMap<ApplicationUser, GetUserDto>();
         }
     }
 }

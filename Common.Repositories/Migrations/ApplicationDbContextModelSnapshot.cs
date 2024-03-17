@@ -17,10 +17,85 @@ namespace Common.Repositories.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Common.Domain.ApplicationUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Login")
+                        .IsUnique();
+
+                    b.ToTable("ApplicationUsers");
+                });
+
+            modelBuilder.Entity("Common.Domain.ApplicationUserApplicationRole", b =>
+                {
+                    b.Property<int>("ApplicationUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ApplicationUserRoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ApplicationUserId", "ApplicationUserRoleId");
+
+                    b.HasIndex("ApplicationUserRoleId");
+
+                    b.ToTable("ApplicationUserApplicationRole");
+                });
+
+            modelBuilder.Entity("Common.Domain.ApplicationUserRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplicationUserRoles");
+                });
+
+            modelBuilder.Entity("Common.Domain.RefreshToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<int>("ApplicationUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("RefreshTokens");
+                });
 
             modelBuilder.Entity("Common.Domain.ToDo", b =>
                 {
@@ -52,30 +127,42 @@ namespace Common.Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ToDos", (string)null);
+                    b.ToTable("ToDos");
                 });
 
-            modelBuilder.Entity("Common.Domain.User", b =>
+            modelBuilder.Entity("Common.Domain.ApplicationUserApplicationRole", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.HasOne("Common.Domain.ApplicationUser", "ApplicationUser")
+                        .WithMany("Roles")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.HasOne("Common.Domain.ApplicationUserRole", "ApplicationUserRole")
+                        .WithMany("Users")
+                        .HasForeignKey("ApplicationUserRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Navigation("ApplicationUser");
 
-                    b.HasKey("Id");
+                    b.Navigation("ApplicationUserRole");
+                });
 
-                    b.ToTable("Users", (string)null);
+            modelBuilder.Entity("Common.Domain.RefreshToken", b =>
+                {
+                    b.HasOne("Common.Domain.ApplicationUser", "ApplicationUser")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Common.Domain.ToDo", b =>
                 {
-                    b.HasOne("Common.Domain.User", "User")
+                    b.HasOne("Common.Domain.ApplicationUser", "User")
                         .WithMany("ToDos")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -84,9 +171,18 @@ namespace Common.Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Common.Domain.User", b =>
+            modelBuilder.Entity("Common.Domain.ApplicationUser", b =>
                 {
+                    b.Navigation("RefreshTokens");
+
+                    b.Navigation("Roles");
+
                     b.Navigation("ToDos");
+                });
+
+            modelBuilder.Entity("Common.Domain.ApplicationUserRole", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

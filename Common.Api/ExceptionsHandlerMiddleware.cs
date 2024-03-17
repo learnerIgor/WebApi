@@ -35,6 +35,10 @@ namespace Common.Api
                         statusCode = HttpStatusCode.NotFound;
                         result = JsonConvert.SerializeObject(notFoundException.Message);
                         break;
+                    case ForbiddenException forbiddenException:
+                        statusCode = HttpStatusCode.Forbidden;
+                        result = JsonConvert.SerializeObject(forbiddenException.Message);
+                        break;
                     default:
                         result = exceptions.Message;
                         break;

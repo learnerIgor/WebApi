@@ -46,6 +46,12 @@ namespace Common.Repositories
             return predicate == null ? await set.SingleOrDefaultAsync(cancellationToken) : await set.SingleOrDefaultAsync(predicate, cancellationToken);
         }
 
+        public async Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>>? predicate, CancellationToken cancellationToken)
+        {
+            var set = _applicationDbContext.Set<TEntity>();
+            return predicate == null ? await set.SingleAsync(cancellationToken) : await set.SingleAsync(predicate, cancellationToken);
+        }
+
         public int Count(Expression<Func<TEntity, bool>>? predicate = null)
         {
             var set = _applicationDbContext.Set<TEntity>();
