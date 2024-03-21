@@ -53,24 +53,21 @@ namespace Users.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(UpdateUserDto user, int id, CancellationToken cancellationToken)
         {
-            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var userUpdt = await _userService.UpdateAsync(currentUserId, id, user, cancellationToken);
+            var userUpdt = await _userService.UpdateAsync(id, user, cancellationToken);
             return Ok(userUpdt);
         }
 
         [HttpPut("{id}/Password")]
         public async Task<IActionResult> UpdateUserPassword(UpdatePasswordDto user, int id, CancellationToken cancellationToken)
         {
-            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var userUpdt = await _userService.UpdatePasswordAsync(currentUserId, id, user, cancellationToken);
+            var userUpdt = await _userService.UpdatePasswordAsync(id, user, cancellationToken);
             return Ok(userUpdt);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id, CancellationToken cancellationToken)
         {
-            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var result = await _userService.DeleteAsync(currentUserId, id, cancellationToken);
+            var result = await _userService.DeleteAsync(id, cancellationToken);
             return Ok(result);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Auth.Service;
 using Common.Domain;
 using Common.Repositories;
+using Common.Service;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -20,6 +21,8 @@ namespace Users.Service
 
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
+
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
 
             services.AddValidatorsFromAssemblies(new[] { Assembly.GetExecutingAssembly() }, includeInternalTypes: true);
 

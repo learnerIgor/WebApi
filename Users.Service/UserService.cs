@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Common.Domain;
 using Common.Repositories;
+using Common.Service;
 using Common.Service.Exceptions;
 using Common.Service.Utils;
 using Newtonsoft.Json;
@@ -15,13 +16,15 @@ namespace Users.Service
         private readonly IRepository<ApplicationUserRole> _appUserRoleRepository;
         private readonly IRepository<ApplicationUserApplicationRole> _appUserAppRoleRepository;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUserService;
 
-        public UserService(IRepository<ApplicationUser> userRepository, IRepository<ApplicationUserRole> applicationUserRoleRepository, IRepository<ApplicationUserApplicationRole> appUserAppRoleRepository, IMapper mapper)
+        public UserService(IRepository<ApplicationUser> userRepository, IRepository<ApplicationUserRole> applicationUserRoleRepository, IRepository<ApplicationUserApplicationRole> appUserAppRoleRepository, ICurrentUserService currentUserService, IMapper mapper)
         {
             _userRepository = userRepository;
             _appUserRoleRepository = applicationUserRoleRepository;
             _appUserAppRoleRepository = appUserAppRoleRepository;
             _mapper = mapper;
+            _currentUserService = currentUserService;
         }
 
         public async Task<IReadOnlyCollection<GetUserDto>> GetListUsersAsync(int? offset, string? nameFree, int? limit = 7, CancellationToken cancellationToken = default)
@@ -67,7 +70,7 @@ namespace Users.Service
             return _mapper.Map<GetUserDto>(await _userRepository.AddAsync(entity, cancellationToken));
         }
 
-        public async Task<GetUserDto> UpdateAsync(int currentUserId, int id, UpdateUserDto updtUserDto, CancellationToken cancellationToken)
+        public async Task<GetUserDto> UpdateAsync(int id, UpdateUserDto updtUserDto, CancellationToken cancellationToken)
         {
             var updtUser = await _userRepository.SingleOrDefaultAsync(i => i.Id == id, cancellationToken);
             if (updtUser == null)
@@ -75,8 +78,7 @@ namespace Users.Service
                 Log.Error($"There isn't user with id {id} in DB");
                 throw new NotFoundException($"There isn't user with id {id} in DB");
             }
-            var userRoles = await _appUserAppRoleRepository.GetListAsync(predicate: x => x.ApplicationUserId == currentUserId,  cancellationToken: cancellationToken);
-            if (currentUserId != id && !userRoles.Any(u => u.ApplicationUserRole.Name == "Admin"))
+            if (_currentUserService.CurrentUserId != id && !_currentUserService.UserRole.Contains("Admin"))
             {
                 Log.Error($"Your account {updtUser.Login} doesn't allow editing");
                 throw new ForbiddenException();
@@ -88,7 +90,7 @@ namespace Users.Service
             return  _mapper.Map<GetUserDto>(await _userRepository.UpdateAsync(updtUser, cancellationToken));
         }
 
-        public async Task<GetUserDto> UpdatePasswordAsync(int currentUserId, int id, UpdatePasswordDto passwordDto, CancellationToken cancellationToken)
+        public async Task<GetUserDto> UpdatePasswordAsync(int id, UpdatePasswordDto passwordDto, CancellationToken cancellationToken)
         {
             var user = await _userRepository.SingleOrDefaultAsync(i => i.Id == id, cancellationToken);
             if(user == null)
@@ -96,8 +98,7 @@ namespace Users.Service
                 Log.Error($"There isn't user with id {id} in DB");
                 throw new NotFoundException($"There isn't user with id {id} in DB");
             }
-            var userRoles = await _appUserAppRoleRepository.GetListAsync(predicate: u => u.ApplicationUserId == currentUserId,cancellationToken: cancellationToken);
-            if (currentUserId != id && !userRoles.Any(n => n.ApplicationUserRole.Name == "Admin"))
+            if (_currentUserService.CurrentUserId != id && !_currentUserService.UserRole.Contains("Admin"))
             {
                 Log.Error($"Your account {user.Login} doesn't allow editing");
                 throw new ForbiddenException();
@@ -110,7 +111,7 @@ namespace Users.Service
             return _mapper.Map<GetUserDto>(await _userRepository.UpdateAsync(user, cancellationToken));
         }
 
-        public async Task<bool> DeleteAsync(int currentUserId, int id, CancellationToken cancellationToken)
+        public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
         {
             var deletUser = await _userRepository.SingleOrDefaultAsync(i => i.Id == id, cancellationToken);
             if (deletUser == null) 
@@ -118,8 +119,7 @@ namespace Users.Service
                 Log.Error($"There isn't user with id {id} in DB");
                 throw new NotFoundException($"There isn't user with id {id} in DB");
             }
-            var userRoles = await _appUserAppRoleRepository.GetListAsync(predicate: x => x.ApplicationUserId == currentUserId, cancellationToken: cancellationToken);
-            if (currentUserId != id && !userRoles.Any(u => u.ApplicationUserRole.Name == "Admin"))
+            if (_currentUserService.CurrentUserId != id && !_currentUserService.UserRole.Contains("Admin"))
             {
                 Log.Error($"Your account {deletUser.Login} doesn't allow deliting");
                 throw new ForbiddenException();

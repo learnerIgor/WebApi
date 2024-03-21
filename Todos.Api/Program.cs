@@ -79,6 +79,8 @@ try
 
     builder.Services.AddTodosDatabase(builder.Configuration);
 
+    builder.Services.AddHttpContextAccessor();
+
     var app = builder.Build();
 
     app.UseExceptionsHandler();

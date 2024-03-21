@@ -4,6 +4,7 @@ using Todos.Service.Mapping;
 using Common.Domain;
 using FluentValidation;
 using System.Reflection;
+using Common.Service;
 
 namespace Todos.Service
 {
@@ -16,6 +17,8 @@ namespace Todos.Service
             services.AddTransient<IRepository<ApplicationUser>, SqlServerBaseRepository<ApplicationUser>>();
             services.AddTransient<IRepository<ApplicationUserApplicationRole>, SqlServerBaseRepository<ApplicationUserApplicationRole>>();
             services.AddTransient<IRepository<ToDo>, SqlServerBaseRepository<ToDo>>();
+
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
 
             services.AddValidatorsFromAssemblies(new[] { Assembly.GetExecutingAssembly() }, includeInternalTypes: true);
 
