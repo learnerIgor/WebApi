@@ -1,7 +1,7 @@
 using Serilog;
 using Serilog.Events;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using Todos.Service;
+using Common.Application;
+using Todos.Application;
 using Common.Api;
 using Common.Repositories;
 using System.Text.Json.Serialization;
@@ -54,9 +54,9 @@ try
         });
     });
 
-    builder.Services.AddTodosServices();
+    builder.Services.AddTodosApplication();
 
-    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddCommonApplication();
 
     builder.Services.AddAuthorization();
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -78,6 +78,8 @@ try
     builder.Host.UseSerilog();
 
     builder.Services.AddTodosDatabase(builder.Configuration);
+
+    builder.Services.AddMemoryCache();
 
     builder.Services.AddHttpContextAccessor();
 

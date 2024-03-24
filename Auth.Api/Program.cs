@@ -3,7 +3,7 @@ using Serilog;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Auth.Service;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
+using Common.Application;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -53,9 +53,9 @@ try
         });
     });
 
-    builder.Services.AddAuthServices();
+    builder.Services.AddAuthApplication();
 
-    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddCommonApplication();
 
     builder.Services.AddAuthorization();
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

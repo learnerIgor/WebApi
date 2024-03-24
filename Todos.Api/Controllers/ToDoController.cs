@@ -1,8 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Todos.Service;
-using Todos.Service.Dto;
+using Todos.Application.Commands.CreateTodo;
+using Todos.Application.Commands.DeleteTodo;
+using Todos.Application.Commands.UpdateIsDone;
+using Todos.Application.Commands.UpdateTodo;
+using Todos.Application.Dtos;
+using Todos.Application.Queries.GetCountTodos;
+using Todos.Application.Queries.GetListTodos;
+using Todos.Application.Queries.GetTodoById;
+using Todos.Application.Queries.GetTodoIsDone;
 
 namespace Todos.Api.Controllers
 {
@@ -11,61 +18,80 @@ namespace Todos.Api.Controllers
     [ApiController]
     public class ToDoController : ControllerBase
     {
-        private readonly ITodoService _todoService;
-
-        public ToDoController(ITodoService todoService)
-        {
-            _todoService = todoService;
-        }
-
         [HttpGet]
-        public async Task<IActionResult> GetListTodos(int? offset, string? LabelFreeText, int? ownerTodo, int? limit, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetListTodos(
+            [FromQuery] GetListTodosQuery getListTodosQuery,
+            [FromQuery] GetCountTodosQuery getCountTodosQuery,
+            IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var todos = await _todoService.GetListTodosAsync(offset, LabelFreeText, ownerTodo, limit, cancellationToken);
-            var count = await _todoService.CountAsync(ownerTodo, LabelFreeText, cancellationToken);
+            var todos = await mediator.Send(getListTodosQuery, cancellationToken);
+            var count = await mediator.Send(getCountTodosQuery, cancellationToken);
             HttpContext.Response.Headers.Append("x-Total-Count", count.ToString());
             return Ok(todos);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetTodoById(int id, CancellationToken cancellationToken)
+        [HttpGet("Id")]
+        public async Task<IActionResult> GetTodoById(
+            [FromQuery] GetTodoByIdQuery getTodoByIdQuery,
+            IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var todo = await _todoService.GetToDoByIdOrDefaultAsync(id, cancellationToken);
+            var todo = await mediator.Send(getTodoByIdQuery, cancellationToken);
             return Ok(todo);
         }
 
-        [HttpGet("{id}/IsDone")]
-        public async Task<IActionResult> GetIsDone(int id, CancellationToken cancellationToken)
+        [HttpGet("Id/IsDone")]
+        public async Task<IActionResult> GetIsDone(
+            [FromQuery] GetTodoIsDoneQuery getTodoIsDoneQuery,
+            IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var isDone = await _todoService.GetIsDoneTodoAsync(id, cancellationToken);
+            var isDone = await mediator.Send(getTodoIsDoneQuery, cancellationToken);
             return Ok(isDone);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTodo(CreateToDoDto createTodoDto, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateTodo(
+            [FromBody] CreateTodoCommand createTodoDto,
+            IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var newToDo = await _todoService.CreateAsync(createTodoDto, cancellationToken);
+            var newToDo = await mediator.Send(createTodoDto, cancellationToken);
             return Created($"ToDo/{newToDo.Id}", newToDo);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTodo(int id, UpdateToDoDto updtTodoDto, CancellationToken cancellationToken)
+        [HttpPut("Id")]
+        public async Task<IActionResult> UpdateTodo(
+            [FromQuery] int id, 
+            [FromBody] UpdateTodoPayLoad updateTodoPayLoad,
+            IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var updateTodo = await _todoService.UpdateAsync(id, updtTodoDto, cancellationToken);
+            UpdateTodoCommand updateTodoCommand = new(id, updateTodoPayLoad);
+            var updateTodo = await mediator.Send(updateTodoCommand, cancellationToken);
             return Ok(updateTodo);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteTodo([FromBody] int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteTodo(
+            [FromBody] DeleteTodoCommand deleteTodoCommand,
+            IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var result = await _todoService.DeleteAsync(id, cancellationToken);
+            var result = await mediator.Send(deleteTodoCommand, cancellationToken);
             return Ok(result);
         }
 
-        [HttpPatch("{id}/isDone")]
-        public async Task<IActionResult> PatchIsDone(int id, [FromBody] bool UpdateDone, CancellationToken cancellationToken)
+        [HttpPatch("Id/isDone")]
+        public async Task<IActionResult> PatchIsDone(
+            [FromQuery] int id, 
+            [FromBody] UpdateIsDonePayLoad updateIsDonePayLoad,
+            IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var isDone = await _todoService.PatchAsync(id, UpdateDone, cancellationToken);
+            UpdateIsDoneCommand updateIsDoneCommand = new(id, updateIsDonePayLoad);
+            var isDone = await mediator.Send(updateIsDoneCommand, cancellationToken);
             return Ok(isDone);
         }
     }

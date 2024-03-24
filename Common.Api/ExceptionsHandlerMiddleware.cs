@@ -1,4 +1,5 @@
-﻿using Common.Service.Exceptions;
+﻿using Common.Application.Exceptions;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Net;
@@ -34,6 +35,10 @@ namespace Common.Api
                     case NotFoundException notFoundException:
                         statusCode = HttpStatusCode.NotFound;
                         result = JsonConvert.SerializeObject(notFoundException.Message);
+                        break;
+                    case ValidationException validationException:
+                        statusCode = HttpStatusCode.BadRequest;
+                        result = JsonConvert.SerializeObject(validationException.Message);
                         break;
                     case ForbiddenException forbiddenException:
                         statusCode = HttpStatusCode.Forbidden;

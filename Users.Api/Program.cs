@@ -1,7 +1,6 @@
 using Serilog;
 using Serilog.Events;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using Users.Service;
+using Users.Application;
 using Common.Api;
 using Common.Repositories;
 using System.Text.Json.Serialization;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Common.Application;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -54,9 +54,9 @@ try
         });
     });
 
-    builder.Services.AddUsersServices();
-
-    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddUserApplication();
+    builder.Services.AddCommonApplication();
+    
 
     builder.Services.AddAuthorization();
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -77,6 +77,8 @@ try
     builder.Host.UseSerilog();
 
     builder.Services.AddTodosDatabase(builder.Configuration);
+
+    builder.Services.AddMemoryCache();
 
     builder.Services.AddHttpContextAccessor();
 

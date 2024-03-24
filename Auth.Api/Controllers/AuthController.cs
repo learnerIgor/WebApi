@@ -1,7 +1,8 @@
-﻿using Auth.Service;
-using Auth.Service.Dto;
+﻿using Auth.Application.Commands.CreateToken;
+using Auth.Application.Commands.RefreshJwtToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
 
 namespace Users.Api.Controllers
 {
@@ -10,26 +11,25 @@ namespace Users.Api.Controllers
     [Route("[controller]")]
     public class AuthController : Controller
     {
-        private readonly IAuthService _authService;
-
-        public AuthController(IAuthService authService)
-        {
-            _authService = authService;
-        }
-
         [AllowAnonymous]
         [HttpPost("/CreateJwtToken")]
-        public async Task<IActionResult> CreateJwtToken(AuthDto authDto, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateJwtToken(
+            [FromBody] AuthCommand authDto,
+            IMediator mediator,  
+            CancellationToken cancellationToken)
         {
-            var createJwt = await _authService.GetJwtTokenAsync(authDto, cancellationToken);
+            var createJwt = await mediator.Send(authDto, cancellationToken);
             return Ok(createJwt);
         }
 
         [AllowAnonymous]
         [HttpPost("/CreateJwtTokenByRefreshTokenAsync")]
-        public async Task<IActionResult> CreateJwtTokenByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateJwtTokenByRefreshTokenAsync(
+            [FromQuery] RefreshJwtTokenCommand refreshJwtTokenCommand,
+            IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var createRefreshJwt = await _authService.CreateJwtTokenByRefreshTokenAsync(refreshToken, cancellationToken);
+            var createRefreshJwt = await mediator.Send(refreshJwtTokenCommand, cancellationToken);
             return Ok(createRefreshJwt);
         }
     }

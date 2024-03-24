@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Common.Application.Abstractions.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,6 +15,8 @@ namespace Common.Repositories
                     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
                 }
             );
+
+            services.AddTransient<IContextTransactionCreator, ContextTransactionCreator>();
             return services;
         }
     }

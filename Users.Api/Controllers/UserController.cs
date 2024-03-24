@@ -1,8 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Users.Service;
-using Users.Service.Dto;
+using Users.Application.Commands.CreateUser;
+using Users.Application.Commands.UpdateUser;
+using Users.Application.Commands.UpdatePassword;
+using Users.Application.Dto;
+using Users.Application.Queries.GetCounts;
+using Users.Application.Queries.GetListUsers;
+using Users.Application.Queries.GetUserById;
+using Users.Application.Commands.DeleteUser;
+using MediatR;
 
 namespace Users.Api.Controllers
 {
@@ -11,63 +17,82 @@ namespace Users.Api.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
-        public UserController(IUserService userService)
-        {
-            _userService = userService;
-        }
-
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> ListUsers(int? offset, string? nameFree, int? limit, CancellationToken cancellationToken)
+        public async Task<IActionResult> ListUsers(
+            [FromQuery] GetListUsersQuery getListUsersQuery, 
+            IMediator mediator, 
+            CancellationToken cancellationToken)
         {
-            var users = await _userService.GetListUsersAsync(offset, nameFree, limit, cancellationToken);
-            var count = await _userService.CountAsync(nameFree, cancellationToken);
+            var users = await mediator.Send(getListUsersQuery, cancellationToken);
+            var count = await mediator.Send(new GetCountUsersQuery() { NameFree = getListUsersQuery.NameFree }, cancellationToken);
             HttpContext.Response.Headers.Append("x-Total-Count", count.ToString());
             return Ok(users);
         }
 
         [AllowAnonymous]
-        [HttpGet("{id}")]
-        public async Task <IActionResult> GetUserById(int id, CancellationToken cancellationToken)
+        [HttpGet("Id")]
+        public async Task<IActionResult> GetUserById(
+            [FromQuery] GetUserByIdQuery getUserByIdQuery, 
+            IMediator mediator, 
+            CancellationToken cancellationToken)
         {
-            var user = await _userService.GetUserByIdOrDefaultAsync(id, cancellationToken);
+            var user = await mediator.Send(getUserByIdQuery, cancellationToken);
             return Ok(user);
         }
 
         [AllowAnonymous]
         [HttpGet("UsersCount")]
-        public async Task<IActionResult> GetCount(string? nameFree, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetCount(
+            [FromQuery] BaseUsersFilter baseUsersFilter, 
+            IMediator mediator, 
+            CancellationToken cancellationToken)
         {
-            return Ok(await _userService.CountAsync(nameFree, cancellationToken));
+            return Ok(await mediator.Send(new GetCountUsersQuery() { NameFree = baseUsersFilter.NameFree }, cancellationToken));
         }
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> CreateUser(CreateUserDto user, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateUser(
+            [FromBody] CreateUserCommand createUserCommand, 
+            IMediator mediator, 
+            CancellationToken cancellationToken)
         {
-            var userNew = await _userService.CreateAsync(user, cancellationToken);
+            var userNew = await mediator.Send(createUserCommand, cancellationToken);
             return Created($"/User/{userNew.Id}", userNew);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(UpdateUserDto user, int id, CancellationToken cancellationToken)
+        [HttpPut("Id")]
+        public async Task<IActionResult> UpdateUser(
+            [FromQuery] int id,
+            [FromBody] UpdateUserCommandPayLoad updateUserCommandPayLoad, 
+            IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var userUpdt = await _userService.UpdateAsync(id, user, cancellationToken);
+            UpdateUserCommand updateUserCommand = new(id, updateUserCommandPayLoad);
+            var userUpdt = await mediator.Send(updateUserCommand, cancellationToken);
             return Ok(userUpdt);
         }
 
-        [HttpPut("{id}/Password")]
-        public async Task<IActionResult> UpdateUserPassword(UpdatePasswordDto user, int id, CancellationToken cancellationToken)
+        [HttpPut("Id/Password")]
+        public async Task<IActionResult> UpdateUserPassword(
+            [FromQuery] int id,
+            [FromBody] UpdatePasswordPayLoad updatePasswordPayLoad, 
+            IMediator mediator, 
+            CancellationToken cancellationToken)
         {
-            var userUpdt = await _userService.UpdatePasswordAsync(id, user, cancellationToken);
+            UpdatePasswordCommand updatePasswordCommand = new(id, updatePasswordPayLoad);
+            var userUpdt = await mediator.Send(updatePasswordCommand, cancellationToken);
             return Ok(userUpdt);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id, CancellationToken cancellationToken)
+        [HttpDelete("Id")]
+        public async Task<IActionResult> DeleteUser(
+            [FromQuery] DeleteUserCommand deleteUserCommand,
+            IMediator mediator,
+            CancellationToken cancellationToken)
         {
-            var result = await _userService.DeleteAsync(id, cancellationToken);
+            var result = await mediator.Send(deleteUserCommand, cancellationToken);
             return Ok(result);
         }
     }
