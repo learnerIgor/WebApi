@@ -31,23 +31,23 @@ namespace Todos.Api.Controllers
             return Ok(todos);
         }
 
-        [HttpGet("Id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetTodoById(
-            [FromQuery] GetTodoByIdQuery getTodoByIdQuery,
+            int id,
             IMediator mediator,
             CancellationToken cancellationToken)
         {
-            var todo = await mediator.Send(getTodoByIdQuery, cancellationToken);
+            var todo = await mediator.Send(new GetTodoByIdQuery { Id = id }, cancellationToken);
             return Ok(todo);
         }
 
-        [HttpGet("Id/IsDone")]
+        [HttpGet("{id}/IsDone")]
         public async Task<IActionResult> GetIsDone(
-            [FromQuery] GetTodoIsDoneQuery getTodoIsDoneQuery,
+            int id,
             IMediator mediator,
             CancellationToken cancellationToken)
         {
-            var isDone = await mediator.Send(getTodoIsDoneQuery, cancellationToken);
+            var isDone = await mediator.Send(new GetTodoIsDoneQuery { Id = id }, cancellationToken);
             return Ok(isDone);
         }
 
@@ -61,9 +61,9 @@ namespace Todos.Api.Controllers
             return Created($"ToDo/{newToDo.Id}", newToDo);
         }
 
-        [HttpPut("Id")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTodo(
-            [FromQuery] int id, 
+            int id, 
             [FromBody] UpdateTodoPayLoad updateTodoPayLoad,
             IMediator mediator,
             CancellationToken cancellationToken)
@@ -83,9 +83,9 @@ namespace Todos.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPatch("Id/isDone")]
+        [HttpPatch("{id}/isDone")]
         public async Task<IActionResult> PatchIsDone(
-            [FromQuery] int id, 
+            int id, 
             [FromBody] UpdateIsDonePayLoad updateIsDonePayLoad,
             IMediator mediator,
             CancellationToken cancellationToken)

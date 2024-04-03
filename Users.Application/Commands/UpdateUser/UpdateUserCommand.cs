@@ -7,7 +7,7 @@ namespace Users.Application.Commands.UpdateUser
     {
         public int Id { get; set; }
         public string Login { get; set; } = default!;
-        public UpdateUserCommand(int id, UpdateUserCommandPayLoad updateUserCommandPayLoad)
+        public UpdateUserCommand(int id, UpdateUserPayLoad updateUserCommandPayLoad)
         {
             Id = id;
             Login = updateUserCommandPayLoad.Login;

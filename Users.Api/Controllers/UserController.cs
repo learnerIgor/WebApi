@@ -31,13 +31,13 @@ namespace Users.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("Id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(
-            [FromQuery] GetUserByIdQuery getUserByIdQuery, 
-            IMediator mediator, 
+            int id,
+            IMediator mediator,
             CancellationToken cancellationToken)
         {
-            var user = await mediator.Send(getUserByIdQuery, cancellationToken);
+            var user = await mediator.Send(new GetUserByIdQuery { Id = id }, cancellationToken);
             return Ok(user);
         }
 
@@ -62,10 +62,10 @@ namespace Users.Api.Controllers
             return Created($"/User/{userNew.Id}", userNew);
         }
 
-        [HttpPut("Id")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(
-            [FromQuery] int id,
-            [FromBody] UpdateUserCommandPayLoad updateUserCommandPayLoad, 
+            int id,
+            [FromBody] UpdateUserPayLoad updateUserCommandPayLoad, 
             IMediator mediator,
             CancellationToken cancellationToken)
         {
@@ -74,9 +74,9 @@ namespace Users.Api.Controllers
             return Ok(userUpdt);
         }
 
-        [HttpPut("Id/Password")]
+        [HttpPut("{id}/Password")]
         public async Task<IActionResult> UpdateUserPassword(
-            [FromQuery] int id,
+            int id,
             [FromBody] UpdatePasswordPayLoad updatePasswordPayLoad, 
             IMediator mediator, 
             CancellationToken cancellationToken)
@@ -86,13 +86,13 @@ namespace Users.Api.Controllers
             return Ok(userUpdt);
         }
 
-        [HttpDelete("Id")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(
-            [FromQuery] DeleteUserCommand deleteUserCommand,
+            int id,
             IMediator mediator,
             CancellationToken cancellationToken)
         {
-            var result = await mediator.Send(deleteUserCommand, cancellationToken);
+            var result = await mediator.Send(new DeleteUserCommand { Id = id }, cancellationToken);
             return Ok(result);
         }
     }

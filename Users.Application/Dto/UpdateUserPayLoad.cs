@@ -1,6 +1,6 @@
 ﻿namespace Users.Application.Dto
 {
-    public class UpdateUserCommandPayLoad
+    public class UpdateUserPayLoad
     {
         public string Login { get; set; } = default!;
     }
